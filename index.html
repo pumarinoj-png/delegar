@@ -358,6 +358,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div class="section-title">¿Cómo delegar?</div>
         <div class="section-subtitle">Completa el guión de la conversación</div>
       </div>
+      <div class="section-summary" id="sum3"></div>
     </div>
     <div class="section-body">
       <div id="s3-pills"></div>
@@ -777,15 +778,24 @@ async function suggestMicros(){
     if(!r.ok||d.error){throw new Error(d.error||'Error '+r.status);}
     const txt=d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
     const list=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    window._microSuggestions = list;
     el.innerHTML=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
       <p style="font-size:11px;font-weight:600;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px">Sugerencias — clic para agregar</p>
-      <div style="display:flex;flex-wrap:wrap;gap:6px">${list.map(s=>`<button onclick="addMicroText(${JSON.stringify(s)},this)" class="btn btn-sm">${esc(s)}</button>`).join('')}</div></div>`;
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${list.map((s,i)=>`<button onclick="addMicroIdx(${i},this)" class="btn btn-sm">${esc(s)}</button>`).join('')}</div></div>`;
   } catch(err){
     el.innerHTML=`<div class="alert alert-red"><span>❌</span><span><strong>Error:</strong> ${err.message}. <a href="/api/test" target="_blank" style="color:var(--red);text-decoration:underline">Verificar configuración →</a></span></div>`;
   }
 }
 
 function addMicroText(text,btn){
+  state.micros.push({id:++mid,text,level:3});
+  renderMicros();
+  btn.style.opacity='0.4';btn.disabled=true;
+}
+
+function addMicroIdx(i,btn){
+  const text=(window._microSuggestions||[])[i]||'';
+  if(!text) return;
   state.micros.push({id:++mid,text,level:3});
   renderMicros();
   btn.style.opacity='0.4';btn.disabled=true;
@@ -883,7 +893,7 @@ function resetAll(){
   const sec0=document.getElementById('sec0');
   sec0.classList.remove('done','locked','pending');
   sec0.classList.add('active');
-  ['sum0','sum1','sum2'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
+  ['sum0','sum1','sum2','sum3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';}); 
   document.getElementById('script-output').innerHTML='';
   document.getElementById('final-btns').style.display='none';
   document.getElementById('micro-sugg').innerHTML='';
