@@ -619,7 +619,7 @@ function renderPersonTable(){
     const total=getTotal(p);
     const col=total>=20?'var(--green)':total>=13?'var(--amber)':'var(--red)';
     return `<tr>
-      <td><input type="text" value="${esc(p.name)}" placeholder="Nombre…" oninput="updatePName(${p.id},this.value)"></td>
+      <td style="min-width:100px"><textarea rows="1" style="width:100%;min-width:90px;resize:none;overflow:hidden;background:transparent;border:none;padding:4px 6px;font-size:12px;font-weight:500;font-family:inherit;color:var(--text);line-height:1.4" placeholder="Nombre…" oninput="updatePName(${p.id},this.value);autoGrow(this)">${esc(p.name)}</textarea></td>
       ${SK.map(k=>`<td><div class="score-pills">${[1,2,3,4,5].map(v=>`<span class="sp${p.s[k]===v?' sel':''}" onclick="setScore(${p.id},'${k}',${v})">${v}</span>`).join('')}</div></td>`).join('')}
       <td><span style="font-size:14px;font-weight:600;color:${col}">${total}/25</span></td>
       <td><button class="del-btn" onclick="removePerson(${p.id})">✕</button></td>
@@ -636,7 +636,7 @@ function renderSliders(){
     const col=total>=20?'var(--green)':total>=13?'var(--amber)':'var(--red)';
     return `<div class="slider-card">
       <div class="slider-head">
-        <input type="text" value="${esc(p.name)}" placeholder="Nombre…" oninput="updatePName(${p.id},this.value)" style="border:none;background:transparent;font-size:14px;font-weight:600;padding:0;width:55%">
+        <textarea rows="1" placeholder="Nombre…" oninput="updatePName(${p.id},this.value);autoGrow(this)" style="border:none;background:transparent;font-size:14px;font-weight:600;padding:0;width:55%;resize:none;overflow:hidden;font-family:inherit;color:var(--text);line-height:1.4">${esc(p.name)}</textarea>
         <div style="display:flex;align-items:center;gap:8px"><span style="font-size:13px;font-weight:600;color:${col}">${total}/25</span><button class="del-btn" onclick="removePerson(${p.id})">✕</button></div>
       </div>
       ${SK.map(k=>`<div class="slider-row">
@@ -765,19 +765,24 @@ function selectPoker(n,el){
   d.innerHTML=`<strong>Nivel ${n} — ${PK_NAME[n-1]}:</strong> ${PK_DESC[n-1]}`;
 }
 
-function suggestMicros(){
+async function suggestMicros(){
   const el=document.getElementById('micro-sugg');
   el.innerHTML='<div class="alert alert-blue"><span class="spinner"></span><span>Consultando sugerencias de microtareas…</span></div>';
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({
-    model:'claude-sonnet-4-6',max_tokens:500,
-    messages:[{role:'user',content:`La tarea a delegar es: "${state.selTask}". Sugiere 5-6 microtareas muy concretas y específicas (como "enviar mail de convocatoria", "reservar sala", "preparar agenda"). Responde SOLO con un array JSON de strings, sin texto adicional ni backticks.`}]
-  })}).then(r=>r.json()).then(d=>{
+  try {
+    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-6',max_tokens:500,
+      messages:[{role:'user',content:`La tarea a delegar es: "${state.selTask}". Sugiere 5-6 microtareas muy concretas y específicas (como "enviar mail de convocatoria", "reservar sala", "preparar agenda"). Responde SOLO con un array JSON de strings, sin texto adicional ni backticks.`}]
+    })});
+    const d=await r.json();
+    if(!r.ok||d.error){throw new Error(d.error||'Error '+r.status);}
     const txt=d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
     const list=JSON.parse(txt.replace(/```json|```/g,'').trim());
     el.innerHTML=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
       <p style="font-size:11px;font-weight:600;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px">Sugerencias — clic para agregar</p>
       <div style="display:flex;flex-wrap:wrap;gap:6px">${list.map(s=>`<button onclick="addMicroText(${JSON.stringify(s)},this)" class="btn btn-sm">${esc(s)}</button>`).join('')}</div></div>`;
-  }).catch(()=>{el.innerHTML='<div class="alert alert-amber"><span>⚠️</span><span>Error al cargar sugerencias. Escribe las microtareas manualmente.</span></div>';});
+  } catch(err){
+    el.innerHTML=`<div class="alert alert-red"><span>❌</span><span><strong>Error:</strong> ${err.message}. <a href="/api/test" target="_blank" style="color:var(--red);text-decoration:underline">Verificar configuración →</a></span></div>`;
+  }
 }
 
 function addMicroText(text,btn){
@@ -815,7 +820,7 @@ function renderGuionFields(){
     </div>`).join('');
 }
 
-function generateScript(){
+async function generateScript(){
   const vals={};
   ['gf1','gf2','gf3','gf4','gf5','gf6'].forEach(id=>{vals[id]=document.getElementById(id).value.trim();});
   const warns=[];
@@ -825,9 +830,10 @@ function generateScript(){
   const warnHtml=warns.map(w=>`<div class="alert alert-amber" style="margin-bottom:6px"><span>⚠️</span><span>${w}</span></div>`).join('');
   const out=document.getElementById('script-output');
   out.innerHTML=warnHtml+`<div class="script-box"><div class="script-head"><span style="font-size:22px">🗣️</span><div><h3>Generando guión…</h3><p>Claude está escribiendo el texto que puedes decir</p></div></div><div class="alert alert-blue"><span class="spinner"></span><span>Escribiendo guión en primera persona…</span></div></div>`;
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({
-    model:'claude-sonnet-4-6',max_tokens:900,
-    messages:[{role:'user',content:`Eres un coach de liderazgo experto en delegación. Escribe un guión conversacional completo en primera persona para delegar una tarea.
+  try {
+    const r = await fetch('/api/claude', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+      model: 'claude-sonnet-4-6', max_tokens: 900,
+      messages: [{role:'user', content: `Eres un coach de liderazgo experto en delegación. Escribe un guión conversacional completo en primera persona para delegar una tarea.
 
 Datos:
 - Tarea: ${vals.gf1}
@@ -836,7 +842,6 @@ Datos:
 - Fortalezas/desafíos: ${vals.gf4||'(no especificado)'}
 - Microtareas y niveles: ${vals.gf5||'(no especificado)'}
 - Objetivo e hitos: ${vals.gf6||'(no especificado)'}
-
 
 Escribe el guión como texto corrido en primera persona, cálido y natural al hablarlo. Estructura en estos momentos (sin poner títulos ni bullets, solo párrafos separados):
 1. Apertura y contexto
@@ -847,19 +852,21 @@ Escribe el guión como texto corrido en primera persona, cálido y natural al ha
 6. Cierre cálido: agradece a la persona por aceptar el desafío, reitera tu confianza en ella, ofrece tu disponibilidad si tiene dudas y anímala a comenzar.
 
 Máximo 300 palabras.`}]
-  })}).then(r=>r.json()).then(d=>{
-    const txt=d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
-    out.innerHTML=warnHtml+`<div class="script-box">
+    })});
+    const d = await r.json();
+    if (!r.ok || d.error) { throw new Error(d.error || 'Error ' + r.status); }
+    const txt = d.content.filter(c => c.type === 'text').map(c => c.text).join('');
+    out.innerHTML = warnHtml + `<div class="script-box">
       <div class="script-head"><span style="font-size:22px">🗣️</span><div><h3>Guión de la conversación de delegación</h3><p>Texto sugerido — edítalo libremente antes de usarlo</p></div></div>
       <textarea id="script-textarea">${esc(txt)}</textarea>
       ${warns.length===0?'<div class="alert alert-green" style="margin-top:10px"><span>✅</span><span>Guión completo. Ya tienes todo para una conversación de delegación efectiva.</span></div>':''}
     </div>`;
-    document.getElementById('final-btns').style.display='block';
-    doneSection(3,'Guión generado');
-  }).catch(()=>{
-    out.innerHTML=warnHtml+'<div class="alert alert-red"><span>⚠️</span><span>Error al generar el guión. Revisa tu conexión e intenta de nuevo.</span></div>';
-    document.getElementById('final-btns').style.display='block';
-  });
+    document.getElementById('final-btns').style.display = 'block';
+    doneSection(3, 'Guión generado');
+  } catch(err) {
+    out.innerHTML = warnHtml + `<div class="alert alert-red"><span>❌</span><span><strong>Error:</strong> ${err.message} — <a href="/api/test" target="_blank" style="color:var(--red);text-decoration:underline">Verificar API key →</a></span></div>`;
+    document.getElementById('final-btns').style.display = 'block';
+  }
 }
 
 function copyScript(){
