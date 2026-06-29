@@ -82,6 +82,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px;background:var(--su
 .tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
 .tbl tr:last-child td{border-bottom:none}
 .tbl td input[type=text]{background:transparent;border-color:transparent;padding:4px 6px}
+.task-name-input{width:100%;min-width:140px;white-space:pre-wrap;word-break:break-word}
 .tbl td input[type=text]:focus{background:#fff;border-color:var(--accent)}
 .crit-list{display:flex;flex-direction:column;gap:4px}
 .crit-item{display:flex;gap:6px;align-items:flex-start;cursor:pointer;font-size:11px;color:var(--text);line-height:1.4}
@@ -521,7 +522,7 @@ function renderTaskTable(){
         <button class="btn btn-sm" onclick="answerConfirm(${t.id},false)">No, la retendré</button>
       </div></div></td></tr>`:'';
 
-    return `<tr><td><input type="text" value="${esc(t.text)}" placeholder="Describe la tarea…" oninput="updateTaskText(${t.id},this.value)"></td>
+    return `<tr><td style="min-width:150px;width:170px"><textarea rows="2" style="width:100%;min-height:48px;resize:none;overflow:hidden;background:transparent;border:none;border-radius:var(--radius-sm);padding:4px 6px;font-size:13px;font-family:inherit;color:var(--text);line-height:1.5" placeholder="Describe la tarea…" oninput="updateTaskText(${t.id},this.value);autoGrow(this)">${esc(t.text)}</textarea></td>
       <td><div class="crit-list">${SI_C.map((c,j)=>`<label class="crit-item"><input type="checkbox" ${t.si.includes(j)?'checked':''} onchange="toggleC(${t.id},'si',${j})"><span>${c}</span></label>`).join('')}</div></td>
       <td><div class="crit-list">${NO_C.map((c,j)=>`<label class="crit-item no-c"><input type="checkbox" ${t.no.includes(j)?'checked':''} onchange="toggleC(${t.id},'no',${j})"><span>${c}</span></label>`).join('')}</div></td>
       <td style="text-align:center;vertical-align:middle">${badge}</td>
@@ -883,6 +884,8 @@ function resetAll(){
   addTask();
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
+function autoGrow(el){el.style.height='auto';el.style.height=el.scrollHeight+'px'}
 
 /* ===== INIT ===== */
 addTask();
