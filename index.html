@@ -768,7 +768,7 @@ function selectPoker(n,el){
 function suggestMicros(){
   const el=document.getElementById('micro-sugg');
   el.innerHTML='<div class="alert alert-blue"><span class="spinner"></span><span>Consultando sugerencias de microtareas…</span></div>';
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({
     model:'claude-sonnet-4-6',max_tokens:500,
     messages:[{role:'user',content:`La tarea a delegar es: "${state.selTask}". Sugiere 5-6 microtareas muy concretas y específicas (como "enviar mail de convocatoria", "reservar sala", "preparar agenda"). Responde SOLO con un array JSON de strings, sin texto adicional ni backticks.`}]
   })}).then(r=>r.json()).then(d=>{
@@ -825,7 +825,7 @@ function generateScript(){
   const warnHtml=warns.map(w=>`<div class="alert alert-amber" style="margin-bottom:6px"><span>⚠️</span><span>${w}</span></div>`).join('');
   const out=document.getElementById('script-output');
   out.innerHTML=warnHtml+`<div class="script-box"><div class="script-head"><span style="font-size:22px">🗣️</span><div><h3>Generando guión…</h3><p>Claude está escribiendo el texto que puedes decir</p></div></div><div class="alert alert-blue"><span class="spinner"></span><span>Escribiendo guión en primera persona…</span></div></div>`;
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({
     model:'claude-sonnet-4-6',max_tokens:900,
     messages:[{role:'user',content:`Eres un coach de liderazgo experto en delegación. Escribe un guión conversacional completo en primera persona para delegar una tarea.
 
