@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Herramienta de Delegación</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F6F3;--surface:#fff;--surface2:#F0EEE9;
+  --border:#E0DDD6;--border-strong:#C8C5BE;
+  --text:#1A1916;--text-sec:#6B6860;--text-muted:#9C9A95;
+  --accent:#2563EB;--accent-bg:#EFF6FF;--accent-border:#BFDBFE;
+  --green:#16A34A;--green-bg:#F0FDF4;--green-border:#BBF7D0;
+  --red:#DC2626;--red-bg:#FEF2F2;--red-border:#FECACA;
+  --amber:#D97706;--amber-bg:#FFFBEB;--amber-border:#FDE68A;
+  --radius:10px;--radius-sm:6px;
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+
+/* TOP BAR */
+.top-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.top-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.top-bar h1{font-size:15px;font-weight:600}
+.top-bar p{font-size:11px;color:var(--text-sec)}
+
+/* LAYOUT */
+.layout{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+
+/* ACCORDION SECTIONS */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;transition:all 0.2s}
+.section.locked{opacity:0.5;pointer-events:none}
+.section-header{display:flex;align-items:center;gap:14px;padding:18px 20px;cursor:default}
+.step-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--text-muted);flex-shrink:0;transition:all 0.2s}
+.section.active .step-circle{border-color:var(--accent);background:var(--accent);color:#fff}
+.section.done .step-circle{border-color:var(--green);background:var(--green);color:#fff}
+.section-title{font-size:16px;font-weight:600}
+.section-subtitle{font-size:12px;color:var(--text-sec);margin-top:2px}
+.section-summary{margin-left:auto;font-size:12px;color:var(--text-sec);text-align:right}
+.section-body{padding:0 20px 20px;border-top:1px solid var(--border)}
+.section.locked .section-body,.section.pending .section-body{display:none}
+
+/* FORMS */
+input[type=text],textarea,select{font-family:inherit;font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;outline:none;transition:border-color 0.15s;width:100%}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--accent);background:#fff}
+textarea{resize:vertical;min-height:72px;line-height:1.6}
+
+/* BUTTONS */
+.btn{font-family:inherit;font-size:13px;font-weight:500;padding:9px 18px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);cursor:pointer;transition:all 0.12s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--surface2)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:#1d4ed8;border-color:#1d4ed8}
+.btn-sm{padding:6px 13px;font-size:12px}
+.add-btn{color:var(--accent);font-size:12px;font-weight:500;background:none;border:none;cursor:pointer;padding:6px 0;display:inline-flex;align-items:center;gap:4px;font-family:inherit}
+.add-btn:hover{text-decoration:underline}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:4px;border-radius:4px;line-height:1;transition:color 0.12s;font-family:inherit}
+.del-btn:hover{color:var(--red)}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.badge-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.badge-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.badge-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.badge-blue{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-border)}
+.badge-gray{background:var(--surface2);color:var(--text-sec);border:1px solid var(--border)}
+
+/* ALERTS */
+.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;line-height:1.5;margin-top:8px;display:flex;gap:8px;align-items:flex-start}
+.alert-green{background:var(--green-bg);color:#15803D;border:1px solid var(--green-border)}
+.alert-red{background:var(--red-bg);color:#B91C1C;border:1px solid var(--red-border)}
+.alert-amber{background:var(--amber-bg);color:#B45309;border:1px solid var(--amber-border)}
+.alert-blue{background:var(--accent-bg);color:#1d4ed8;border:1px solid var(--accent-border)}
+
+/* CONTEXT PILL */
+.ctx-pill{display:inline-flex;align-items:center;gap:6px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--accent);font-weight:500;margin-bottom:14px;margin-right:6px}
+
+/* TASK TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface)}
+.tbl th{background:var(--surface2);padding:10px 12px;text-align:left;font-weight:600;font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td input[type=text]{background:transparent;border-color:transparent;padding:4px 6px}
+.tbl td input[type=text]:focus{background:#fff;border-color:var(--accent)}
+.crit-list{display:flex;flex-direction:column;gap:4px}
+.crit-item{display:flex;gap:6px;align-items:flex-start;cursor:pointer;font-size:11px;color:var(--text);line-height:1.4}
+.crit-item input[type=checkbox]{width:13px;height:13px;margin-top:1px;flex-shrink:0;accent-color:var(--accent);cursor:pointer}
+.crit-item.no-c input[type=checkbox]{accent-color:var(--red)}
+
+/* CONFIRM BOX */
+.confirm-box{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:12px 14px;margin-top:8px}
+.confirm-box p{font-size:12px;color:#92400E;margin-bottom:10px;line-height:1.5}
+.confirm-btns{display:flex;gap:8px}
+
+/* SELECT LIST */
+.sel-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-top:16px}
+.sel-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.sel-card .hint{font-size:12px;color:var(--text-sec);margin-bottom:12px}
+
+.sel-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;margin-bottom:6px;font-size:13px;transition:all 0.12s;background:var(--surface);user-select:none}
+.sel-row:hover{border-color:var(--accent);background:var(--accent-bg)}
+.sel-row.sel{border-color:var(--accent);background:var(--accent-bg)}
+.sel-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border-strong);flex-shrink:0;transition:all 0.12s;position:relative}
+.sel-row.sel .sel-dot{border-color:var(--accent);background:var(--accent)}
+.sel-row.sel .sel-dot::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:#fff}
+
+/* PERSON TABLE */
+.person-table th{text-align:center;min-width:130px}
+.person-table th:first-child{text-align:left;min-width:110px}
+.th-sub{font-size:10px;font-weight:400;color:var(--text-muted);display:block;margin-top:4px;line-height:1.4;white-space:normal}
+.person-table td{text-align:center;vertical-align:middle}
+.person-table td:first-child{text-align:left}
+.person-table td input[type=text]{background:transparent;border-color:transparent;padding:4px 6px;font-size:12px;font-weight:500}
+.person-table td input[type=text]:focus{background:#fff;border-color:var(--accent)}
+.score-pills{display:flex;gap:3px;justify-content:center}
+.sp{width:26px;height:26px;border-radius:50%;font-size:11px;font-weight:500;line-height:26px;text-align:center;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--text-sec);transition:all 0.1s;user-select:none}
+.sp:hover{border-color:var(--accent);color:var(--accent)}
+.sp.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* SLIDER VIEW */
+.vtb-group{display:flex;gap:6px;margin-bottom:14px}
+.vtb{font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);cursor:pointer;color:var(--text-sec);font-family:inherit;transition:all 0.12s}
+.vtb.active{background:var(--accent-bg);color:var(--accent);border-color:var(--accent-border)}
+.slider-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.slider-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.slider-row{margin-bottom:10px}
+.slider-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+.slider-top .slbl{color:var(--text-sec);font-weight:500}
+.slider-top .slbl small{font-weight:400;color:var(--text-muted);display:block;font-size:10px;line-height:1.3;margin-top:1px}
+.slider-top .sval{font-weight:600;color:var(--accent)}
+input[type=range]{width:100%;-webkit-appearance:none;height:4px;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px var(--accent)}
+
+/* POKER */
+.poker-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px}
+.pk{border-radius:10px;padding:10px 4px 8px;text-align:center;cursor:pointer;border:3px solid transparent;transition:all 0.12s}
+.pk:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.pk.sel{border-color:#1A1916;box-shadow:0 0 0 2px #fff inset}
+.pk-num{font-size:22px;font-weight:700;color:#fff;display:block;text-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.pk-name{font-size:9px;font-weight:700;color:#fff;display:block;margin-top:3px;text-transform:uppercase;letter-spacing:0.05em;text-shadow:0 1px 2px rgba(0,0,0,0.4)}
+.pk-ico{font-size:13px;display:block;margin-bottom:3px}
+.pk1{background:#E91E8C}.pk2{background:#F44336}.pk3{background:#FF9800}.pk4{background:#F9C513}.pk5{background:#4CAF50}.pk6{background:#2196F3}.pk7{background:#9C27B0}
+.poker-desc{padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;margin-bottom:14px;font-weight:500;display:none}
+
+/* MICRO TABLE */
+.micro-table th{text-align:left}
+.micro-table td{vertical-align:middle}
+.micro-table td input[type=text]{background:transparent;border-color:transparent;font-size:12px;padding:4px 6px}
+.micro-table td input[type=text]:focus{background:#fff;border-color:var(--accent)}
+.micro-table td select{font-size:11px;padding:4px 6px;background:var(--bg)}
+.move-btns{display:flex;flex-direction:column;gap:2px}
+.move-btn{width:20px;height:18px;border:1px solid var(--border);background:var(--bg);border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--text-sec);transition:all 0.1s;font-family:inherit}
+.move-btn:hover{background:var(--surface2)}
+.move-btn:disabled{opacity:0.3;cursor:default}
+
+/* GUION */
+.gf-field{margin-bottom:18px}
+.gf-label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.gf-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--surface2);flex-shrink:0}
+.auto-tag{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);font-weight:500}
+
+/* SCRIPT */
+.script-box{background:linear-gradient(135deg,#EFF6FF 0%,#F0FDF4 100%);border:1px solid var(--accent-border);border-radius:var(--radius);padding:20px;margin-top:16px}
+.script-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.script-head h3{font-size:14px;font-weight:600;color:var(--accent)}
+.script-head p{font-size:11px;color:var(--text-sec)}
+#script-textarea{width:100%;font-size:14px;line-height:1.8;min-height:250px;border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:14px;background:#fff;color:var(--text);font-family:inherit;resize:vertical}
+
+/* LOADING */
+.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SECTION ACTIONS */
+.sec-actions{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* FINAL */
+.final-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+@media(max-width:600px){.poker-grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-icon">🎯</div>
+  <div>
+    <h1>Herramienta de Delegación</h1>
+    <p>Guía paso a paso para delegar con claridad y confianza</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SECCIÓN 1 -->
+  <div class="section active" id="sec0">
+    <div class="section-header">
+      <div class="step-circle">1</div>
+      <div>
+        <div class="section-title">¿Qué delegar?</div>
+        <div class="section-subtitle">Ingresa tus tareas y marca los criterios</div>
+      </div>
+      <div class="section-summary" id="sum0"></div>
+    </div>
+    <div class="section-body">
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="min-width:150px">Tarea</th>
+              <th style="min-width:220px">✅ Delegar si se cumplen ≥ 2</th>
+              <th style="min-width:200px">🚫 No delegar si se cumple ≥ 1</th>
+              <th style="min-width:90px;text-align:center">Resultado</th>
+              <th style="width:30px"></th>
+            </tr>
+          </thead>
+          <tbody id="task-tbody"></tbody>
+        </table>
+      </div>
+      <button class="add-btn" onclick="addTask()" style="margin-top:10px">＋ Agregar tarea</button>
+
+      <div id="confirm-area"></div>
+
+      <div id="task-select-area" style="display:none">
+        <div class="sel-card">
+          <h3>Selecciona la tarea que delegarás</h3>
+          <p class="hint">Elige una tarea delegable de la lista, o escribe una de ejemplo si quieres practicar el proceso.</p>
+          <div id="delegable-list"></div>
+          <div style="margin-top:8px">
+            <input type="text" id="custom-task" placeholder="Si no tienes nada que delegar, ingresa aquí una tarea delegable para hacer el ejercicio">
+          </div>
+        </div>
+        <div class="sec-actions">
+          <span></span>
+          <button class="btn btn-primary" onclick="confirmStep0()">Continuar → ¿A quién delegar? →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 2 -->
+  <div class="section locked pending" id="sec1">
+    <div class="section-header">
+      <div class="step-circle">2</div>
+      <div>
+        <div class="section-title">¿A quién delegar?</div>
+        <div class="section-subtitle" id="sub1">Evalúa a cada persona de tu equipo</div>
+      </div>
+      <div class="section-summary" id="sum1"></div>
+    </div>
+    <div class="section-body">
+      <div id="s1-pills"></div>
+
+      <div class="vtb-group">
+        <button class="vtb active" id="vt-table" onclick="setView('table')">📊 Tabla comparativa</button>
+        <button class="vtb" id="vt-slider" onclick="setView('slider')">🎚️ Sliders</button>
+      </div>
+
+      <div id="view-table">
+        <div class="tbl-wrap">
+          <table class="tbl person-table">
+            <thead>
+              <tr>
+                <th>Persona</th>
+                <th>¿Sabe?<span class="th-sub">Conocimiento y experiencia para asegurar calidad (1=nada, 5=experto/a)</span></th>
+                <th>¿Puede?<span class="th-sub">Tiempo disponible y prioridades (1=sin tiempo, 5=mucho espacio)</span></th>
+                <th>¿Quiere?<span class="th-sub">Motivación para esta tarea (1=la desmotiva, 5=la motiva mucho)</span></th>
+                <th>¿Riesgo?<span class="th-sub">Tranquilidad al delegarle (1=muy intranquilo/a, 5=muy tranquilo/a)</span></th>
+                <th>¿Equidad?<span class="th-sub">Balance de cargas del equipo (1=más desequilibrio, 5=más equilibrio)</span></th>
+                <th>Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="person-tbody"></tbody>
+          </table>
+        </div>
+        <button class="add-btn" onclick="addPerson()" style="margin-top:10px">＋ Agregar persona</button>
+      </div>
+
+      <div id="view-slider" style="display:none">
+        <div id="slider-cards"></div>
+        <button class="add-btn" onclick="addPerson()">＋ Agregar persona</button>
+      </div>
+
+      <div id="person-warnings" style="margin-top:10px"></div>
+
+      <div id="person-select-area" style="display:none;margin-top:16px">
+        <div class="sel-card">
+          <h3>¿A quién delegarás?</h3>
+          <p class="hint">Ordenadas de mayor a menor puntaje.</p>
+          <div id="person-list"></div>
+        </div>
+      </div>
+
+      <div class="sec-actions">
+        <button class="btn btn-sm" onclick="editStep(0)">← Editar paso anterior</button>
+        <button class="btn btn-primary" onclick="confirmStep1()">Continuar → ¿Cuánto delegar? →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 3 -->
+  <div class="section locked pending" id="sec2">
+    <div class="section-header">
+      <div class="step-circle">3</div>
+      <div>
+        <div class="section-title">¿Cuánto delegar?</div>
+        <div class="section-subtitle" id="sub2">Define el nivel de autonomía por microtarea</div>
+      </div>
+      <div class="section-summary" id="sum2"></div>
+    </div>
+    <div class="section-body">
+      <div id="s2-pills"></div>
+
+      <div class="poker-grid">
+        <div class="pk pk1" onclick="selectPoker(1,this)"><span class="pk-ico">👤</span><span class="pk-num">1</span><span class="pk-name">Decir</span></div>
+        <div class="pk pk2" onclick="selectPoker(2,this)"><span class="pk-ico">👤→👥</span><span class="pk-num">2</span><span class="pk-name">Vender</span></div>
+        <div class="pk pk3" onclick="selectPoker(3,this)"><span class="pk-ico">👤💬👥</span><span class="pk-num">3</span><span class="pk-name">Consultar</span></div>
+        <div class="pk pk4" onclick="selectPoker(4,this)"><span class="pk-ico">👤🤝👥</span><span class="pk-num">4</span><span class="pk-name">Acordar</span></div>
+        <div class="pk pk5" onclick="selectPoker(5,this)"><span class="pk-ico">👥💬👤</span><span class="pk-num">5</span><span class="pk-name">Aconsejar</span></div>
+        <div class="pk pk6" onclick="selectPoker(6,this)"><span class="pk-ico">👥→👤</span><span class="pk-num">6</span><span class="pk-name">Preguntar</span></div>
+        <div class="pk pk7" onclick="selectPoker(7,this)"><span class="pk-ico">👥</span><span class="pk-num">7</span><span class="pk-name">Delegar</span></div>
+      </div>
+      <div id="poker-desc" class="poker-desc"></div>
+
+      <div class="tbl-wrap">
+        <table class="tbl micro-table">
+          <thead>
+            <tr>
+              <th style="width:36px;text-align:center">↕</th>
+              <th>Microtarea</th>
+              <th style="min-width:175px">Nivel de delegación</th>
+              <th style="width:30px"></th>
+            </tr>
+          </thead>
+          <tbody id="micro-tbody"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
+        <button class="add-btn" onclick="addMicro()">＋ Agregar microtarea</button>
+        <button class="add-btn" style="color:var(--text-sec)" onclick="suggestMicros()">✨ Sugerir con IA</button>
+      </div>
+      <div id="micro-sugg" style="margin-top:10px"></div>
+
+      <div class="sec-actions">
+        <button class="btn btn-sm" onclick="editStep(1)">← Editar paso anterior</button>
+        <button class="btn btn-primary" onclick="confirmStep2()">Continuar → ¿Cómo delegar? →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 4 -->
+  <div class="section locked pending" id="sec3">
+    <div class="section-header">
+      <div class="step-circle">4</div>
+      <div>
+        <div class="section-title">¿Cómo delegar?</div>
+        <div class="section-subtitle">Completa el guión de la conversación</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div id="s3-pills"></div>
+      <div id="guion-fields"></div>
+
+      <div class="sec-actions">
+        <button class="btn btn-sm" onclick="editStep(2)">← Editar paso anterior</button>
+        <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="generateScript()">✨ Generar guión completo</button>
+      </div>
+
+      <div id="script-output" style="margin-top:16px"></div>
+
+      <div id="final-btns" style="display:none;margin-top:14px">
+        <div class="final-actions">
+          <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="resetAll()">🔄 Evaluar otra delegación</button>
+          <button class="btn" onclick="copyScript()">📋 Copiar guión</button>
+          <button class="btn" onclick="sendPrompt('Tengo este guión de delegación. Tarea: '+state.selTask+'. Persona: '+state.selPerson+'. ¿Puedes sugerirme cómo mejorar la conversación?')">💬 Mejorar con IA →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- layout -->
+
+<script>
+/* ===== CONSTANTS ===== */
+const SI_C=[
+  "La puede hacer otra persona sin perder calidad",
+  "Proceso conocido o conocimiento disponible en el equipo",
+  "Se aprende rápido",
+  "Es repetitiva o consume tiempo que necesito en otro lado",
+  "Es una oportunidad de desarrollo para alguien",
+  "Otra persona es más experta en el tema",
+  "No requiere mi criterio político o estratégico",
+  "Tiene que ver con ejecución, análisis, coordinación o desarrollo"
+];
+const NO_C=[
+  "Criterio crítico, incorpora la cultura o es decisión de alto impacto",
+  "Es altamente sensible",
+  "Requiere mi criterio profesional específico",
+  "Requiere un contexto que otros no tienen",
+  "Soy el/la principal responsable en esta etapa clave",
+  "Delegarla puede generar mucho riesgo con alto costo"
+];
+const PK_COL=['#E91E8C','#F44336','#FF9800','#F9C513','#4CAF50','#2196F3','#9C27B0'];
+const PK_NAME=['Decir','Vender','Consultar','Acordar','Aconsejar','Preguntar','Delegar'];
+const PK_DESC=[
+  'Tú decides y les informas. Sin discusión.',
+  'Decides y te esfuerzas en convencerles del porqué.',
+  'Consultas su opinión antes de decidir tú.',
+  'Acordáis la decisión juntos, de forma conjunta.',
+  'Ellos deciden; tú puedes asesorarles si lo piden.',
+  'Ellos deciden y te preguntan si lo necesitan.',
+  'Autonomía total: ellos deciden y ejecutan sin consultarte.'
+];
+const SK=['sabe','puede','quiere','riesgo','equidad'];
+const SK_LBL={
+  sabe:  {t:'¿Sabe?',    d:'Conocimiento y experiencia para asegurar calidad y velocidad (1=nada, 5=experto/a)'},
+  puede: {t:'¿Puede?',   d:'Tiene tiempo o espacio y aborda prioridades iguales o menores (1=sin tiempo, 5=mucho espacio)'},
+  quiere:{t:'¿Quiere?',  d:'Quiere aprender y desarrollar esta tarea, le significa motivación (1=la desmotiva, 5=la motiva mucho)'},
+  riesgo:{t:'¿Riesgo?',  d:'Estás tranquilo/a con el riesgo de delegársela (1=muy intranquilo/a, 5=muy tranquilo/a)'},
+  equidad:{t:'¿Equidad?',d:'Potencia el equilibrio de cargas y oportunidades del equipo (1=más desequilibrio, 5=más equilibrio)'}
+};
+
+/* ===== STATE ===== */
+let state={tasks:[],selTaskId:null,selTask:'',persons:[],selPersonId:null,selPerson:'',micros:[],view:'table'};
+let tid=0,pid=0,mid=0;
+
+/* ===== UTILS ===== */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function getTotal(p){return SK.reduce((s,k)=>s+p.s[k],0)}
+
+/* ===== SECTION CONTROL ===== */
+function openSection(n){
+  const sec=document.getElementById('sec'+n);
+  sec.classList.remove('locked','pending','done');
+  sec.classList.add('active');
+  setTimeout(()=>sec.scrollIntoView({behavior:'smooth',block:'start'}),80);
+}
+
+function lockSection(n){
+  const sec=document.getElementById('sec'+n);
+  sec.classList.remove('active');
+  sec.classList.add('locked','pending');
+  sec.classList.remove('done');
+}
+
+function doneSection(n,summary){
+  const sec=document.getElementById('sec'+n);
+  sec.classList.remove('active','locked','pending');
+  sec.classList.add('done');
+  if(summary) document.getElementById('sum'+n).textContent=summary;
+}
+
+function editStep(n){
+  // Re-open that section, lock everything after
+  for(let i=n+1;i<=3;i++) lockSection(i);
+  openSection(n);
+  const sec=document.getElementById('sec'+n);
+  sec.classList.remove('done');
+  sec.classList.add('active');
+}
+
+/* ===== STEP 0: TASKS ===== */
+function evalTask(t){
+  const si=t.si.length,no=t.no.length;
+  if(no>=1&&si>=2) return 'confirm';
+  if(no>=1) return 'no';
+  if(si>=2) return 'si';
+  if(si===1) return 'rev';
+  return 'none';
+}
+
+function addTask(){
+  state.tasks.push({id:++tid,text:'',si:[],no:[],confirmAnswer:null});
+  renderTaskTable();
+}
+
+function removeTask(id){
+  if(state.selTaskId===id){state.selTaskId=null;state.selTask='';}
+  state.tasks=state.tasks.filter(t=>t.id!==id);
+  renderTaskTable();
+}
+
+function toggleC(id,type,j){
+  const t=state.tasks.find(x=>x.id===id);
+  if(!t)return;
+  const arr=t[type];
+  const i=arr.indexOf(j);
+  if(i>-1)arr.splice(i,1);else arr.push(j);
+  t.confirmAnswer=null;
+  if(state.selTaskId===id){
+    const r=evalTask(t);
+    if(r==='no'||(r==='confirm'&&t.confirmAnswer===null)){state.selTaskId=null;state.selTask='';}
+  }
+  renderTaskTable();
+}
+
+function answerConfirm(id,ans){
+  const t=state.tasks.find(x=>x.id===id);
+  if(t) t.confirmAnswer=ans;
+  renderTaskTable();
+}
+
+function renderTaskTable(){
+  const tb=document.getElementById('task-tbody');
+  tb.innerHTML=state.tasks.map(t=>{
+    const r=evalTask(t);
+    let badge='';
+    if(r==='si') badge='<span class="badge badge-green">✅ Delegar</span>';
+    else if(r==='no') badge='<span class="badge badge-red">🚫 No delegar</span>';
+    else if(r==='rev') badge='<span class="badge badge-amber">🔍 Revisar</span>';
+    else if(r==='confirm'&&t.confirmAnswer===true) badge='<span class="badge badge-green">✅ Sí, delegar</span>';
+    else if(r==='confirm'&&t.confirmAnswer===false) badge='<span class="badge badge-red">🚫 No delegar</span>';
+    else if(r==='confirm') badge='<span class="badge badge-amber">⚠️ Conflicto</span>';
+    else badge='<span class="badge badge-gray">—</span>';
+
+    const confirmTr=(r==='confirm'&&t.confirmAnswer===null)?`<tr><td colspan="5" style="padding:0 12px 10px">
+      <div class="confirm-box"><p>⚠️ Esta tarea cumple criterios de sí delegar (${t.si.length}) pero también tiene condiciones de no delegar (${t.no.length}). ¿Crees que deberías delegarla igual?</p>
+      <div class="confirm-btns">
+        <button class="btn btn-sm btn-primary" onclick="answerConfirm(${t.id},true)">Sí, la delegaré igual</button>
+        <button class="btn btn-sm" onclick="answerConfirm(${t.id},false)">No, la retendré</button>
+      </div></div></td></tr>`:'';
+
+    return `<tr><td><input type="text" value="${esc(t.text)}" placeholder="Describe la tarea…" oninput="updateTaskText(${t.id},this.value)"></td>
+      <td><div class="crit-list">${SI_C.map((c,j)=>`<label class="crit-item"><input type="checkbox" ${t.si.includes(j)?'checked':''} onchange="toggleC(${t.id},'si',${j})"><span>${c}</span></label>`).join('')}</div></td>
+      <td><div class="crit-list">${NO_C.map((c,j)=>`<label class="crit-item no-c"><input type="checkbox" ${t.no.includes(j)?'checked':''} onchange="toggleC(${t.id},'no',${j})"><span>${c}</span></label>`).join('')}</div></td>
+      <td style="text-align:center;vertical-align:middle">${badge}</td>
+      <td><button class="del-btn" onclick="removeTask(${t.id})">✕</button></td>
+    </tr>${confirmTr}`;
+  }).join('');
+  renderDelegableList();
+  document.getElementById('task-select-area').style.display=state.tasks.some(t=>t.text.trim())?'block':'none';
+}
+
+function updateTaskText(id,val){
+  const t=state.tasks.find(x=>x.id===id);
+  if(t){t.text=val;renderDelegableList();}
+}
+
+function renderDelegableList(){
+  const delegable=state.tasks.filter(t=>{
+    if(!t.text.trim()) return false;
+    const r=evalTask(t);
+    return r==='si'||(r==='confirm'&&t.confirmAnswer===true);
+  });
+  // Clear selection if no longer delegable
+  if(state.selTaskId!==null&&!delegable.find(t=>t.id===state.selTaskId)){
+    state.selTaskId=null;state.selTask='';
+  }
+  const el=document.getElementById('delegable-list');
+  el.innerHTML=delegable.map(t=>{
+    const isSel=state.selTaskId===t.id;
+    return `<div class="sel-row${isSel?' sel':''}" data-tid="${t.id}" onclick="selectTask(${t.id},this)">
+      <div class="sel-dot"></div>
+      <span style="flex:1">${esc(t.text)}</span>
+      <span class="badge badge-green">Delegable</span>
+    </div>`;
+  }).join('');
+}
+
+function selectTask(id, el){
+  // Get task text from state
+  const t=state.tasks.find(x=>x.id===id);
+  if(!t) return;
+  state.selTaskId=id;
+  state.selTask=t.text;
+  // Clear custom field
+  document.getElementById('custom-task').value='';
+  // Update visual selection without re-rendering
+  document.querySelectorAll('#delegable-list .sel-row').forEach(r=>r.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function confirmStep0(){
+  const customVal=document.getElementById('custom-task').value.trim();
+  // Use radio selection first, fallback to typed text
+  const finalTask=state.selTaskId!==null?state.selTask:customVal;
+  if(!finalTask){
+    alert('Selecciona una tarea delegable de la lista, o escribe una tarea de ejemplo en el campo inferior.');
+    return;
+  }
+  state.selTask=finalTask;
+  doneSection(0,'Tarea: '+finalTask.substring(0,40)+(finalTask.length>40?'…':''));
+  // Init step 1
+  document.getElementById('s1-pills').innerHTML=`<span class="ctx-pill">🎯 ${esc(state.selTask)}</span>`;
+  if(state.persons.length===0) addPerson();
+  renderPersonTable();
+  renderSliders();
+  openSection(1);
+}
+
+/* ===== STEP 1: PERSONS ===== */
+function addPerson(){
+  state.persons.push({id:++pid,name:'',s:{sabe:3,puede:3,quiere:3,riesgo:3,equidad:3}});
+  renderPersonTable();
+  renderSliders();
+}
+
+function removePerson(id){
+  if(state.selPersonId===id){state.selPersonId=null;state.selPerson='';}
+  state.persons=state.persons.filter(p=>p.id!==id);
+  renderPersonTable();renderSliders();renderPersonSelect();
+}
+
+function setScore(pid2,key,val){
+  const p=state.persons.find(x=>x.id===pid2);
+  if(p){p.s[key]=val;renderPersonTable();renderSliders();renderPersonSelect();renderPersonWarnings();}
+}
+
+function updatePName(id,val){
+  const p=state.persons.find(x=>x.id===id);
+  if(p){p.name=val;renderPersonSelect();}
+}
+
+function renderPersonTable(){
+  const tb=document.getElementById('person-tbody');
+  tb.innerHTML=state.persons.map(p=>{
+    const total=getTotal(p);
+    const col=total>=20?'var(--green)':total>=13?'var(--amber)':'var(--red)';
+    return `<tr>
+      <td><input type="text" value="${esc(p.name)}" placeholder="Nombre…" oninput="updatePName(${p.id},this.value)"></td>
+      ${SK.map(k=>`<td><div class="score-pills">${[1,2,3,4,5].map(v=>`<span class="sp${p.s[k]===v?' sel':''}" onclick="setScore(${p.id},'${k}',${v})">${v}</span>`).join('')}</div></td>`).join('')}
+      <td><span style="font-size:14px;font-weight:600;color:${col}">${total}/25</span></td>
+      <td><button class="del-btn" onclick="removePerson(${p.id})">✕</button></td>
+    </tr>`;
+  }).join('');
+  renderPersonWarnings();
+  renderPersonSelect();
+}
+
+function renderSliders(){
+  const el=document.getElementById('slider-cards');
+  el.innerHTML=state.persons.map(p=>{
+    const total=getTotal(p);
+    const col=total>=20?'var(--green)':total>=13?'var(--amber)':'var(--red)';
+    return `<div class="slider-card">
+      <div class="slider-head">
+        <input type="text" value="${esc(p.name)}" placeholder="Nombre…" oninput="updatePName(${p.id},this.value)" style="border:none;background:transparent;font-size:14px;font-weight:600;padding:0;width:55%">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:13px;font-weight:600;color:${col}">${total}/25</span><button class="del-btn" onclick="removePerson(${p.id})">✕</button></div>
+      </div>
+      ${SK.map(k=>`<div class="slider-row">
+        <div class="slider-top">
+          <span class="slbl">${SK_LBL[k].t}<small>${SK_LBL[k].d}</small></span>
+          <span class="sval" id="sv-${p.id}-${k}">${p.s[k]}/5</span>
+        </div>
+        <input type="range" min="1" max="5" step="1" value="${p.s[k]}" oninput="setScore(${p.id},'${k}',+this.value);document.getElementById('sv-${p.id}-${k}').textContent=this.value+'/5'">
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function renderPersonWarnings(){
+  const valid=state.persons.filter(p=>p.name.trim());
+  let h='';
+  valid.forEach(p=>{
+    if(p.s.riesgo<=2) h+=`<div class="alert alert-amber"><span>⚠️</span><span><strong>${esc(p.name)}</strong>: riesgo bajo. Considera acompañamiento cercano o hitos frecuentes.</span></div>`;
+    if(p.s.puede<=2) h+=`<div class="alert alert-amber"><span>⚠️</span><span><strong>${esc(p.name)}</strong>: poco tiempo disponible. Puede afectar la ejecución.</span></div>`;
+    if(p.s.sabe<=2&&p.s.quiere<=2) h+=`<div class="alert alert-red"><span>🚫</span><span><strong>${esc(p.name)}</strong>: bajo conocimiento y motivación. Esta delegación requiere mucho apoyo.</span></div>`;
+    if(p.s.sabe<=2&&p.s.quiere>=4) h+=`<div class="alert alert-blue"><span>💡</span><span><strong>${esc(p.name)}</strong>: baja experiencia pero alta motivación. Define hitos claros y acompáñale.</span></div>`;
+  });
+  document.getElementById('person-warnings').innerHTML=h;
+}
+
+function renderPersonSelect(){
+  const valid=state.persons.filter(p=>p.name.trim()).sort((a,b)=>getTotal(b)-getTotal(a));
+  if(state.selPersonId!==null&&!valid.find(p=>p.id===state.selPersonId)){state.selPersonId=null;state.selPerson='';}
+  const el=document.getElementById('person-list');
+  el.innerHTML=valid.map((p,i)=>{
+    const total=getTotal(p);
+    const pct=Math.round(total/25*100);
+    const col=total>=20?'var(--green)':total>=13?'var(--amber)':'var(--red)';
+    const isSel=state.selPersonId===p.id;
+    return `<div class="sel-row${isSel?' sel':''}" onclick="selectPerson(${p.id},this)">
+      <div class="sel-dot"></div>
+      <span style="flex:1">${i===0?'⭐ ':''}<strong>${esc(p.name)}</strong></span>
+      <span style="font-weight:600;color:${col}">${total}/25 (${pct}%)</span>
+    </div>`;
+  }).join('');
+  document.getElementById('person-select-area').style.display=valid.length>0?'block':'none';
+}
+
+function selectPerson(id, el){
+  const p=state.persons.find(x=>x.id===id);
+  if(!p) return;
+  state.selPersonId=id;
+  state.selPerson=p.name;
+  document.querySelectorAll('#person-list .sel-row').forEach(r=>r.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function setView(v){
+  state.view=v;
+  document.getElementById('view-table').style.display=v==='table'?'block':'none';
+  document.getElementById('view-slider').style.display=v==='slider'?'block':'none';
+  document.getElementById('vt-table').classList.toggle('active',v==='table');
+  document.getElementById('vt-slider').classList.toggle('active',v==='slider');
+}
+
+function confirmStep1(){
+  if(!state.selPersonId){
+    const valid=state.persons.filter(p=>p.name.trim());
+    if(valid.length===0){alert('Agrega al menos una persona con nombre.');return;}
+    // auto-select top
+    selectPerson(valid[0].id,null);
+  }
+  if(!state.selPerson){alert('Selecciona la persona a quien delegarás.');return;}
+  doneSection(1,state.selPerson+' ('+getTotal(state.persons.find(p=>p.id===state.selPersonId))+'/25)');
+  // Init step 2
+  document.getElementById('s2-pills').innerHTML=`<span class="ctx-pill">🎯 ${esc(state.selTask)}</span><span class="ctx-pill">👤 ${esc(state.selPerson)}</span>`;
+  if(state.micros.length===0) addMicro();
+  renderMicros();
+  openSection(2);
+}
+
+/* ===== STEP 2: MICROTASKS ===== */
+function addMicro(){
+  state.micros.push({id:++mid,text:'',level:3});
+  renderMicros();
+}
+
+function removeMicro(id){
+  state.micros=state.micros.filter(m=>m.id!==id);
+  renderMicros();
+}
+
+function moveMicro(id,dir){
+  const i=state.micros.findIndex(m=>m.id===id);
+  if(dir===-1&&i===0) return;
+  if(dir===1&&i===state.micros.length-1) return;
+  [state.micros[i],state.micros[i+dir]]=[state.micros[i+dir],state.micros[i]];
+  renderMicros();
+}
+
+function updateMicro(id,key,val){
+  const m=state.micros.find(x=>x.id===id);
+  if(m) m[key]=key==='level'?+val:val;
+}
+
+function renderMicros(){
+  const n=state.micros.length;
+  document.getElementById('micro-tbody').innerHTML=state.micros.map((m,i)=>`<tr>
+    <td style="text-align:center;vertical-align:middle">
+      <div class="move-btns">
+        <button class="move-btn" onclick="moveMicro(${m.id},-1)" ${i===0?'disabled':''}>▲</button>
+        <button class="move-btn" onclick="moveMicro(${m.id},1)" ${i===n-1?'disabled':''}>▼</button>
+      </div>
+    </td>
+    <td><input type="text" value="${esc(m.text)}" placeholder="Ej: Enviar mail de convocatoria…" oninput="updateMicro(${m.id},'text',this.value)"></td>
+    <td><select onchange="updateMicro(${m.id},'level',this.value)">
+      ${[1,2,3,4,5,6,7].map(lv=>`<option value="${lv}"${m.level===lv?' selected':''}>${lv} — ${PK_NAME[lv-1]}</option>`).join('')}
+    </select></td>
+    <td><button class="del-btn" onclick="removeMicro(${m.id})">✕</button></td>
+  </tr>`).join('');
+}
+
+function selectPoker(n,el){
+  document.querySelectorAll('.pk').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  const d=document.getElementById('poker-desc');
+  d.style.display='block';
+  d.style.background=PK_COL[n-1]+'22';
+  d.style.border='1px solid '+PK_COL[n-1]+'55';
+  d.style.color=PK_COL[n-1];
+  d.innerHTML=`<strong>Nivel ${n} — ${PK_NAME[n-1]}:</strong> ${PK_DESC[n-1]}`;
+}
+
+function suggestMicros(){
+  const el=document.getElementById('micro-sugg');
+  el.innerHTML='<div class="alert alert-blue"><span class="spinner"></span><span>Consultando sugerencias de microtareas…</span></div>';
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    model:'claude-sonnet-4-6',max_tokens:500,
+    messages:[{role:'user',content:`La tarea a delegar es: "${state.selTask}". Sugiere 5-6 microtareas muy concretas y específicas (como "enviar mail de convocatoria", "reservar sala", "preparar agenda"). Responde SOLO con un array JSON de strings, sin texto adicional ni backticks.`}]
+  })}).then(r=>r.json()).then(d=>{
+    const txt=d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    const list=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    el.innerHTML=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+      <p style="font-size:11px;font-weight:600;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px">Sugerencias — clic para agregar</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${list.map(s=>`<button onclick="addMicroText(${JSON.stringify(s)},this)" class="btn btn-sm">${esc(s)}</button>`).join('')}</div></div>`;
+  }).catch(()=>{el.innerHTML='<div class="alert alert-amber"><span>⚠️</span><span>Error al cargar sugerencias. Escribe las microtareas manualmente.</span></div>';});
+}
+
+function addMicroText(text,btn){
+  state.micros.push({id:++mid,text,level:3});
+  renderMicros();
+  btn.style.opacity='0.4';btn.disabled=true;
+}
+
+function confirmStep2(){
+  const filled=state.micros.filter(m=>m.text.trim());
+  if(filled.length===0){alert('Agrega al menos una microtarea.');return;}
+  doneSection(2,filled.length+' microtarea'+(filled.length>1?'s':''));
+  // Init step 3
+  document.getElementById('s3-pills').innerHTML=`<span class="ctx-pill">🎯 ${esc(state.selTask)}</span><span class="ctx-pill">👤 ${esc(state.selPerson)}</span>`;
+  renderGuionFields();
+  openSection(3);
+}
+
+/* ===== STEP 3: GUION ===== */
+function renderGuionFields(){
+  const microsText=state.micros.filter(m=>m.text.trim()).map(m=>`• ${m.text} → Nivel ${m.level}: ${PK_NAME[m.level-1]}`).join('\n');
+  const fields=[
+    {id:'gf1',icon:'🎯',label:'Tarea a delegar',val:state.selTask,auto:true,ph:''},
+    {id:'gf2',icon:'👤',label:'A quién delegaré',val:state.selPerson,auto:true,ph:''},
+    {id:'gf3',icon:'⭐',label:'Por qué es importante esta tarea',val:'',auto:false,ph:'¿Qué impacto tiene en el proyecto, equipo o resultados? ¿Por qué importa hacerla bien?'},
+    {id:'gf4',icon:'💪',label:'Por qué creo que puede hacerlo bien',val:'',auto:false,ph:'Fortalezas específicas de esta persona, o los desafíos que tendrá que superar…'},
+    {id:'gf5',icon:'📋',label:'Puntos importantes, plazos y niveles de autonomía',val:microsText,auto:!!microsText,ph:''},
+    {id:'gf6',icon:'🏁',label:'Objetivo a conseguir e hitos de seguimiento',val:'',auto:false,ph:'¿Cuál es el resultado esperado? ¿Cómo y cuándo harán seguimiento?'},
+
+  ];
+  document.getElementById('guion-fields').innerHTML=fields.map(f=>`
+    <div class="gf-field">
+      <div class="gf-label"><div class="gf-icon">${f.icon}</div><span>${f.label}</span>${f.auto?'<span class="auto-tag">Auto</span>':''}</div>
+      <textarea id="${f.id}" rows="2" placeholder="${f.ph}">${esc(f.val)}</textarea>
+    </div>`).join('');
+}
+
+function generateScript(){
+  const vals={};
+  ['gf1','gf2','gf3','gf4','gf5','gf6'].forEach(id=>{vals[id]=document.getElementById(id).value.trim();});
+  const warns=[];
+  if(!vals.gf3||vals.gf3.length<15) warns.push('Explica con más detalle por qué la tarea es importante. Esto motiva a la persona.');
+  if(!vals.gf4||vals.gf4.length<15) warns.push('Menciona fortalezas concretas de '+state.selPerson+' o los desafíos que podrían surgir.');
+  if(!vals.gf6||vals.gf6.length<10) warns.push('Define al menos un hito de seguimiento concreto (fecha, reunión, entregable).');
+  const warnHtml=warns.map(w=>`<div class="alert alert-amber" style="margin-bottom:6px"><span>⚠️</span><span>${w}</span></div>`).join('');
+  const out=document.getElementById('script-output');
+  out.innerHTML=warnHtml+`<div class="script-box"><div class="script-head"><span style="font-size:22px">🗣️</span><div><h3>Generando guión…</h3><p>Claude está escribiendo el texto que puedes decir</p></div></div><div class="alert alert-blue"><span class="spinner"></span><span>Escribiendo guión en primera persona…</span></div></div>`;
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    model:'claude-sonnet-4-6',max_tokens:900,
+    messages:[{role:'user',content:`Eres un coach de liderazgo experto en delegación. Escribe un guión conversacional completo en primera persona para delegar una tarea.
+
+Datos:
+- Tarea: ${vals.gf1}
+- Persona: ${vals.gf2}
+- Por qué importa: ${vals.gf3||'(no especificado)'}
+- Fortalezas/desafíos: ${vals.gf4||'(no especificado)'}
+- Microtareas y niveles: ${vals.gf5||'(no especificado)'}
+- Objetivo e hitos: ${vals.gf6||'(no especificado)'}
+
+
+Escribe el guión como texto corrido en primera persona, cálido y natural al hablarlo. Estructura en estos momentos (sin poner títulos ni bullets, solo párrafos separados):
+1. Apertura y contexto
+2. La tarea y su importancia
+3. Por qué le eliges a ella/él
+4. Las microtareas y niveles de autonomía
+5. El objetivo e hitos de seguimiento
+6. Cierre cálido: agradece a la persona por aceptar el desafío, reitera tu confianza en ella, ofrece tu disponibilidad si tiene dudas y anímala a comenzar.
+
+Máximo 300 palabras.`}]
+  })}).then(r=>r.json()).then(d=>{
+    const txt=d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    out.innerHTML=warnHtml+`<div class="script-box">
+      <div class="script-head"><span style="font-size:22px">🗣️</span><div><h3>Guión de la conversación de delegación</h3><p>Texto sugerido — edítalo libremente antes de usarlo</p></div></div>
+      <textarea id="script-textarea">${esc(txt)}</textarea>
+      ${warns.length===0?'<div class="alert alert-green" style="margin-top:10px"><span>✅</span><span>Guión completo. Ya tienes todo para una conversación de delegación efectiva.</span></div>':''}
+    </div>`;
+    document.getElementById('final-btns').style.display='block';
+    doneSection(3,'Guión generado');
+  }).catch(()=>{
+    out.innerHTML=warnHtml+'<div class="alert alert-red"><span>⚠️</span><span>Error al generar el guión. Revisa tu conexión e intenta de nuevo.</span></div>';
+    document.getElementById('final-btns').style.display='block';
+  });
+}
+
+function copyScript(){
+  const ta=document.getElementById('script-textarea');
+  if(!ta){alert('Primero genera el guión.');return;}
+  navigator.clipboard.writeText(ta.value).then(()=>alert('Guión copiado al portapapeles.'));
+}
+
+function resetAll(){
+  state={tasks:[],selTaskId:null,selTask:'',persons:[],selPersonId:null,selPerson:'',micros:[],view:'table'};
+  tid=0;pid=0;mid=0;
+  // Reset all sections
+  for(let i=1;i<=3;i++) lockSection(i);
+  const sec0=document.getElementById('sec0');
+  sec0.classList.remove('done','locked','pending');
+  sec0.classList.add('active');
+  ['sum0','sum1','sum2'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
+  document.getElementById('script-output').innerHTML='';
+  document.getElementById('final-btns').style.display='none';
+  document.getElementById('micro-sugg').innerHTML='';
+  document.getElementById('person-warnings').innerHTML='';
+  addTask();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ===== INIT ===== */
+addTask();
+</script>
+</body>
+</html>
