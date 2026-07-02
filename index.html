@@ -388,7 +388,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div class="final-actions">
           <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="resetAll()">🔄 Evaluar otra delegación</button>
           <button class="btn" onclick="copyScript()">📋 Copiar guión</button>
-          <button class="btn" onclick="sendPrompt('Tengo este guión de delegación. Tarea: '+state.selTask+'. Persona: '+state.selPerson+'. ¿Puedes sugerirme cómo mejorar la conversación?')">💬 Mejorar con IA →</button>
+          <button class="btn" onclick="mejorarConIA()">💬 Mejorar con IA →</button>
         </div>
       </div>
     </div>
@@ -929,6 +929,27 @@ function resetAll(){
 }
 
 function autoGrow(el){el.style.height='auto';el.style.height=el.scrollHeight+'px'}
+
+/* ===== MEJORAR CON IA ===== */
+function mejorarConIA(){
+  const ta = document.getElementById('script-textarea');
+  const guion = ta ? ta.value.trim() : '';
+  const prompt = `Tengo este guión para una conversación de delegación y quiero mejorarlo.
+
+Tarea a delegar: ${state.selTask}
+Persona: ${state.selPerson}
+
+Guión actual:
+${guion}
+
+Por favor:
+1. Señala qué está bien
+2. Sugiere mejoras concretas en tono, claridad o estructura
+3. Ofrece una versión mejorada del guión completo`;
+
+  const url = 'https://claude.ai/new?q=' + encodeURIComponent(prompt);
+  window.open(url, '_blank');
+}
 
 /* ===== EXIT ===== */
 function openExitModal(){
