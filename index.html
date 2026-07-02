@@ -175,6 +175,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 /* SECTION ACTIONS */
 .sec-actions{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 
+/* EXIT BUTTON */
+.btn-exit{color:var(--text-muted);border-color:transparent;background:transparent;font-size:12px}
+.btn-exit:hover{color:var(--red);background:var(--red-bg);border-color:var(--red-border)}
+
 /* FINAL */
 .final-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 
@@ -232,7 +236,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           </div>
         </div>
         <div class="sec-actions">
-          <span></span>
+          <button class="btn btn-exit" onclick="openExitModal()">✕ Salir</button>
           <button class="btn btn-primary" onclick="confirmStep0()">Continuar → ¿A quién delegar? →</button>
         </div>
       </div>
@@ -294,7 +298,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       </div>
 
       <div class="sec-actions">
-        <button class="btn btn-sm" onclick="editStep(0)">← Editar paso anterior</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="editStep(0)">← Editar paso anterior</button>
+          <button class="btn btn-exit btn-sm" onclick="openExitModal()">✕ Salir</button>
+        </div>
         <button class="btn btn-primary" onclick="confirmStep1()">Continuar → ¿Cuánto delegar? →</button>
       </div>
     </div>
@@ -344,7 +351,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div id="micro-sugg" style="margin-top:10px"></div>
 
       <div class="sec-actions">
-        <button class="btn btn-sm" onclick="editStep(1)">← Editar paso anterior</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="editStep(1)">← Editar paso anterior</button>
+          <button class="btn btn-exit btn-sm" onclick="openExitModal()">✕ Salir</button>
+        </div>
         <button class="btn btn-primary" onclick="confirmStep2()">Continuar → ¿Cómo delegar? →</button>
       </div>
     </div>
@@ -365,7 +375,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div id="guion-fields"></div>
 
       <div class="sec-actions">
-        <button class="btn btn-sm" onclick="editStep(2)">← Editar paso anterior</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="editStep(2)">← Editar paso anterior</button>
+          <button class="btn btn-exit btn-sm" onclick="openExitModal()">✕ Salir</button>
+        </div>
         <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="generateScript()">✨ Generar guión completo</button>
       </div>
 
@@ -380,6 +393,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       </div>
     </div>
   </div>
+
+<!-- EXIT MODAL -->
+<div id="exit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;display:none;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border-radius:var(--radius);padding:28px 24px;max-width:380px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
+    <div style="font-size:22px;margin-bottom:10px">👋</div>
+    <h3 style="font-size:16px;font-weight:600;margin-bottom:8px">¿Salir del proceso?</h3>
+    <p style="font-size:13px;color:var(--text-sec);line-height:1.6;margin-bottom:20px">Puedes volver cuando quieras. Tu progreso no se guarda, pero tienes lo que trabajaste hasta aquí.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-sm" onclick="closeExitModal()">Seguir trabajando</button>
+      <button class="btn btn-sm btn-primary" onclick="doExit()" style="background:var(--red);border-color:var(--red)">Sí, salir</button>
+    </div>
+  </div>
+</div>
 
 </div><!-- layout -->
 
@@ -903,6 +929,26 @@ function resetAll(){
 }
 
 function autoGrow(el){el.style.height='auto';el.style.height=el.scrollHeight+'px'}
+
+/* ===== EXIT ===== */
+function openExitModal(){
+  const m=document.getElementById('exit-modal');
+  m.style.display='flex';
+}
+function closeExitModal(){
+  document.getElementById('exit-modal').style.display='none';
+}
+function doExit(){
+  document.getElementById('exit-modal').style.display='none';
+  // Show a thank-you screen
+  document.querySelector('.layout').innerHTML=`
+    <div style="text-align:center;padding:80px 20px">
+      <div style="font-size:48px;margin-bottom:16px">👏</div>
+      <h2 style="font-size:22px;font-weight:600;margin-bottom:10px">¡Bien hecho!</h2>
+      <p style="font-size:14px;color:var(--text-sec);line-height:1.7;max-width:420px;margin:0 auto 28px">Trabajaste en tu proceso de delegación. Cada paso que das en esta dirección fortalece a tu equipo y libera tu tiempo para lo que más importa.</p>
+      <button class="btn btn-primary" style="font-size:14px;padding:11px 24px" onclick="location.reload()">🔄 Volver a empezar</button>
+    </div>`;
+}
 
 /* ===== INIT ===== */
 addTask();
