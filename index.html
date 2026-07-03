@@ -417,6 +417,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   </div>
 </div>
 
+<!-- MODAL: NUEVA DELEGACIÓN (conservando el qué) -->
+<div id="nueva-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:150;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border-radius:var(--radius);padding:28px 24px;max-width:440px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.22)">
+    <div style="font-size:26px;margin-bottom:10px">🔁</div>
+    <h3 style="font-size:16px;font-weight:600;margin-bottom:8px">Analizar otra tarea delegable</h3>
+    <p style="font-size:13px;color:var(--text-sec);line-height:1.6;margin-bottom:6px">
+      Se conservará el listado de tareas que ya analizaste en el <strong>paso 1</strong>, pero se reiniciará todo lo demás (a quién, cuánto y cómo).
+    </p>
+    <div class="alert alert-amber" style="margin-bottom:18px">
+      <span>⚠️</span>
+      <span>Si tienes un guión escrito que quieres guardar, <strong>cópialo antes de continuar</strong> — se perderá al avanzar.</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-sm" id="nueva-copy-btn" onclick="copyAndContinue()" style="justify-content:center">📋 Copiar guión y continuar</button>
+      <button class="btn btn-primary btn-sm" onclick="doNuevaDelegacion()" style="justify-content:center">▶ Continuar sin copiar</button>
+      <button class="btn btn-exit btn-sm" onclick="closeNuevaModal()" style="justify-content:center">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- layout -->
 
 <script>
@@ -1125,50 +1145,81 @@ function copyGuionPropio(){
 }
 
 /* ===== OTRA DELEGACIÓN ===== */
+/* Open the "nueva delegación" modal */
 function elegirOtraDelgacion(){
   const otras = getDelegableOtras();
-  if(otras.length===0){alert('No hay otras tareas delegables pendientes.');return;}
-  if(otras.length===1){
-    // Auto-select the only one and restart from step 2
-    switchTask(otras[0]);
-    return;
-  }
-  // Show picker
-  const out = document.getElementById('output-area');
-  const rows = otras.map(t=>`
-    <div class="sel-row" onclick="switchTask({id:${t.id},text:${JSON.stringify(t.text)}})">
-      <div class="sel-dot"></div>
-      <span style="flex:1">${esc(t.text)}</span>
-      <span class="badge badge-green">Delegable</span>
-    </div>`).join('');
-  out.innerHTML = `<div class="card"><h3 style="font-size:14px;font-weight:600;margin-bottom:12px">¿Qué tarea quieres analizar ahora?</h3>${rows}</div>`;
-  out.scrollIntoView({behavior:'smooth',block:'start'});
+  if(otras.length===0){alert('No hay otras tareas delegables. Puedes agregar más en el paso 1.');return;}
+  // Check if there's a written script to warn about
+  const guion = (document.getElementById('guion-propio')||{value:''}).value.trim();
+  const copyBtn = document.getElementById('nueva-copy-btn');
+  if(copyBtn) copyBtn.style.display = guion ? 'flex' : 'none';
+  document.getElementById('nueva-modal').style.display='flex';
 }
 
-function switchTask(t){
-  // Keep persons and tasks, reset from step 2 (persons) with new task
-  state.selTaskId = t.id;
-  state.selTask = t.text;
+function closeNuevaModal(){
+  document.getElementById('nueva-modal').style.display='none';
+}
+
+function copyAndContinue(){
+  const ta = document.getElementById('guion-propio');
+  if(ta && ta.value.trim()){
+    navigator.clipboard.writeText(ta.value).then(()=>{
+      doNuevaDelegacion();
+    }).catch(()=>{
+      // If clipboard fails, still continue
+      doNuevaDelegacion();
+    });
+  } else {
+    doNuevaDelegacion();
+  }
+}
+
+function doNuevaDelegacion(){
+  closeNuevaModal();
+  closeGuionModal();
+
+  // Keep tasks (step 0), reset everything else
+  state.selTaskId = null;
+  state.selTask = '';
   state.selPersonId = null;
   state.selPerson = '';
+  state.persons = [];
   state.micros = [];
-  mid = 0;
-  // Reset sections 2, 3
-  for(let i=2;i<=3;i++) lockSection(i);
-  ['sum2','sum3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
+  pid = 0; mid = 0;
+
+  // Reset sections 1, 2, 3 visually
+  for(let i=1;i<=3;i++) lockSection(i);
+  ['sum1','sum2','sum3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
   document.getElementById('output-area').innerHTML='';
   document.getElementById('micro-sugg').innerHTML='';
-  // Update section 1 to show new task
-  document.getElementById('s1-pills').innerHTML=`<span class="ctx-pill">🎯 ${esc(state.selTask)}</span>`;
-  // Reset person selection visually
-  document.querySelectorAll('#person-list .sel-row').forEach(r=>r.classList.remove('sel'));
   document.getElementById('person-warnings').innerHTML='';
-  renderPersonSelect();
-  // Reopen section 1
-  const sec1 = document.getElementById('sec1');
-  sec1.classList.remove('done','locked','pending');
-  sec1.classList.add('active');
-  sec1.scrollIntoView({behavior:'smooth',block:'start'});
+
+  // Reopen section 0 — DONE but re-editable
+  // Show a clear "nuevo análisis" banner on section 0
+  const sec0 = document.getElementById('sec0');
+  sec0.classList.remove('locked','pending','done');
+  sec0.classList.add('active');
+
+  // Show the task selection area so they can pick the next task
+  // Re-render delegable list so they can select a different one
+  renderTaskTable();
+  renderDelegableList();
+  document.getElementById('task-select-area').style.display = 'block';
+
+  // Add a banner to make it clear this is a new analysis
+  const tbody = document.getElementById('task-tbody');
+  if(tbody){
+    const banner = document.createElement('div');
+    banner.id = 'nuevo-analisis-banner';
+    banner.style.cssText = 'background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px';
+    banner.innerHTML = '<span>🔁</span><span><strong>Nuevo análisis</strong> — Tus tareas del análisis anterior están conservadas. Selecciona otra tarea delegable o agrega nuevas.</span>';
+    sec0.querySelector('.section-body').insertBefore(banner, sec0.querySelector('.section-body').firstChild);
+  }
+
+  // Update section title to reflect new analysis
+  document.querySelector('#sec0 .section-subtitle').textContent = 'Nuevo análisis — selecciona otra tarea delegable o agrega más';
+
+  sec0.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function resetAll(){
@@ -1183,6 +1234,11 @@ function resetAll(){
   document.getElementById('micro-sugg').innerHTML='';
   document.getElementById('person-warnings').innerHTML='';
   document.getElementById('task-tbody').innerHTML='';
+  // Clean up nuevo-analisis banner and subtitle if present
+  const banner=document.getElementById('nuevo-analisis-banner');
+  if(banner) banner.remove();
+  const sub0=document.querySelector('#sec0 .section-subtitle');
+  if(sub0) sub0.textContent='Ingresa tus tareas y marca los criterios';
   document.getElementById('task-select-area').style.display='none';
   addTask();
   window.scrollTo({top:0,behavior:'smooth'});
