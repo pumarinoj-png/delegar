@@ -366,7 +366,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="step-circle">4</div>
       <div>
         <div class="section-title">¿Cómo delegar?</div>
-        <div class="section-subtitle">Completa el guión de la conversación</div>
+        <div class="section-subtitle">Agrega los elementos faltantes para completar tu delegación</div>
       </div>
       <div class="section-summary" id="sum3"></div>
     </div>
@@ -379,17 +379,27 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <button class="btn btn-sm" onclick="editStep(2)">← Editar paso anterior</button>
           <button class="btn btn-exit btn-sm" onclick="openExitModal()">✕ Salir</button>
         </div>
-        <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="generateScript()">✨ Generar guión completo</button>
+        <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="generateResumen()">📋 Generar resumen de delegación</button>
       </div>
 
-      <div id="script-output" style="margin-top:16px"></div>
+      <div id="output-area" style="margin-top:20px"></div>
+    </div>
+  </div>
 
-      <div id="final-btns" style="display:none;margin-top:14px">
-        <div class="final-actions">
-          <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="resetAll()">🔄 Evaluar otra delegación</button>
-          <button class="btn" onclick="copyScript()">📋 Copiar guión</button>
-          <button class="btn" onclick="mejorarConIA()">💬 Mejorar con IA →</button>
-        </div>
+  <!-- MODAL: ESCRIBIR GUIÓN PROPIO -->
+  <div id="guion-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px">
+    <div style="background:var(--surface);border-radius:var(--radius);padding:28px 24px;max-width:600px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.2)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="font-size:22px">✍️</span>
+        <h3 style="font-size:16px;font-weight:600">Escribe tu guión de delegación</h3>
+      </div>
+      <p style="font-size:12px;color:var(--text-sec);margin-bottom:16px;line-height:1.6">Usa el resumen como base. Escribe en primera persona, con tu propio estilo. Puedes pedir feedback cuando termines.</p>
+      <textarea id="guion-propio" rows="10" style="width:100%;font-size:13px;line-height:1.8;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;background:var(--bg);color:var(--text);font-family:inherit;resize:vertical" placeholder="Escribe aquí tu guión…"></textarea>
+      <div id="feedback-output" style="margin-top:14px"></div>
+      <div id="guion-modal-btns" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;justify-content:flex-end">
+        <button class="btn btn-exit btn-sm" onclick="closeGuionModal()">✕ Cerrar</button>
+        <button class="btn btn-sm" onclick="pedirFeedback()">💬 Pedir feedback</button>
+        <button class="btn btn-sm" onclick="copyGuionPropio()">📋 Copiar guión</button>
       </div>
     </div>
   </div>
@@ -837,119 +847,348 @@ function confirmStep2(){
   openSection(3);
 }
 
-/* ===== STEP 3: GUION ===== */
+/* ===== STEP 3: CÓMO DELEGAR ===== */
 function renderGuionFields(){
-  const microsText=state.micros.filter(m=>m.text.trim()).map(m=>`• ${m.text} → Nivel ${m.level}: ${PK_NAME[m.level-1]}`).join('\n');
-  const fields=[
-    {id:'gf1',icon:'🎯',label:'Tarea a delegar',val:state.selTask,auto:true,ph:''},
-    {id:'gf2',icon:'👤',label:'A quién delegaré',val:state.selPerson,auto:true,ph:''},
-    {id:'gf3',icon:'⭐',label:'Por qué es importante esta tarea',val:'',auto:false,ph:'¿Qué impacto tiene en el proyecto, equipo o resultados? ¿Por qué importa hacerla bien?'},
-    {id:'gf4',icon:'💪',label:'Por qué creo que puede hacerlo bien',val:'',auto:false,ph:'Fortalezas específicas de esta persona, o los desafíos que tendrá que superar…'},
-    {id:'gf5',icon:'📋',label:'Puntos importantes, plazos y niveles de autonomía',val:microsText,auto:!!microsText,ph:''},
-    {id:'gf6',icon:'🏁',label:'Objetivo a conseguir e hitos de seguimiento',val:'',auto:false,ph:'¿Cuál es el resultado esperado? ¿Cómo y cuándo harán seguimiento?'},
-
+  const microsText = state.micros.filter(m=>m.text.trim()).map(m=>`• ${m.text} → Nivel ${m.level}: ${PK_NAME[m.level-1]}`).join('\n');
+  // Only show fields that need to be filled (gf1, gf2, gf5 are auto)
+  const fields = [
+    {id:'gf3', icon:'⭐', label:'Por qué es importante esta tarea',
+     ph:'¿Qué impacto tiene en el proyecto, equipo o resultados? ¿Por qué importa hacerla bien?'},
+    {id:'gf4', icon:'💪', label:'Por qué creo que puede hacerlo bien',
+     ph:'Fortalezas específicas de esta persona o los desafíos que tendrá que superar…'},
+    {id:'gf5', icon:'📋', label:'Puntos importantes y plazos',
+     ph:'Fechas clave, condiciones, restricciones o contexto que debe conocer…', preVal: microsText},
+    {id:'gf6', icon:'🏁', label:'Objetivo a conseguir (idealmente SMART) e hitos de seguimiento',
+     ph:'Específico, medible, alcanzable, relevante y con plazo. Ej: "Tener el informe listo el viernes 15 con al menos 3 alternativas comparadas". ¿Cuándo harán seguimiento?'},
   ];
-  document.getElementById('guion-fields').innerHTML=fields.map(f=>`
+  document.getElementById('guion-fields').innerHTML = `
+    <div class="alert alert-blue" style="margin-bottom:16px">
+      <span>💡</span>
+      <span>Los datos de la tarea y la persona ya están guardados. Completa solo lo que falta para cerrar bien la delegación.</span>
+    </div>
+    ${fields.map(f=>`
     <div class="gf-field">
-      <div class="gf-label"><div class="gf-icon">${f.icon}</div><span>${f.label}</span>${f.auto?'<span class="auto-tag">Auto</span>':''}</div>
-      <textarea id="${f.id}" rows="2" placeholder="${f.ph}">${esc(f.val)}</textarea>
-    </div>`).join('');
+      <div class="gf-label"><div class="gf-icon">${f.icon}</div><span>${f.label}</span>${f.preVal?'<span class="auto-tag">Pre-completado</span>':''}</div>
+      <textarea id="${f.id}" rows="${f.id==='gf5'?3:2}" placeholder="${f.ph}">${esc(f.preVal||'')}</textarea>
+    </div>`).join('')}`;
 }
 
-async function generateScript(){
-  const vals={};
-  ['gf1','gf2','gf3','gf4','gf5','gf6'].forEach(id=>{vals[id]=document.getElementById(id).value.trim();});
-  const warns=[];
-  if(!vals.gf3||vals.gf3.length<15) warns.push('Explica con más detalle por qué la tarea es importante. Esto motiva a la persona.');
-  if(!vals.gf4||vals.gf4.length<15) warns.push('Menciona fortalezas concretas de '+state.selPerson+' o los desafíos que podrían surgir.');
-  if(!vals.gf6||vals.gf6.length<10) warns.push('Define al menos un hito de seguimiento concreto (fecha, reunión, entregable).');
-  const warnHtml=warns.map(w=>`<div class="alert alert-amber" style="margin-bottom:6px"><span>⚠️</span><span>${w}</span></div>`).join('');
-  const out=document.getElementById('script-output');
-  out.innerHTML=warnHtml+`<div class="script-box"><div class="script-head"><span style="font-size:22px">🗣️</span><div><h3>Generando guión…</h3><p>Claude está escribiendo el texto que puedes decir</p></div></div><div class="alert alert-blue"><span class="spinner"></span><span>Escribiendo guión en primera persona…</span></div></div>`;
+function getGuionVals(){
+  const vals = {
+    gf1: state.selTask,
+    gf2: state.selPerson,
+    gf3: (document.getElementById('gf3')||{value:''}).value.trim(),
+    gf4: (document.getElementById('gf4')||{value:''}).value.trim(),
+    gf5: (document.getElementById('gf5')||{value:''}).value.trim(),
+    gf6: (document.getElementById('gf6')||{value:''}).value.trim(),
+  };
+  return vals;
+}
+
+function getDelegableOtras(){
+  // Tasks marked as delegable that are NOT the current selTask
+  return state.tasks.filter(t => {
+    if(!t.text.trim() || t.text === state.selTask) return false;
+    const r = evalTask(t);
+    return r==='si' || (r==='confirm' && t.confirmAnswer===true);
+  });
+}
+
+async function generateResumen(){
+  const vals = getGuionVals();
+  const warns = [];
+  if(!vals.gf3||vals.gf3.length<10) warns.push('Agrega por qué es importante esta tarea para motivar a tu colaborador/a.');
+  if(!vals.gf4||vals.gf4.length<10) warns.push('Menciona fortalezas o desafíos concretos de '+state.selPerson+'.');
+  if(!vals.gf6||vals.gf6.length<10) warns.push('Define el objetivo a conseguir e incluye al menos un hito de seguimiento.');
+
+  if(warns.length>0){
+    const warnHtml = warns.map(w=>`<div class="alert alert-amber" style="margin-bottom:6px"><span>⚠️</span><span>${w}</span></div>`).join('');
+    document.getElementById('output-area').innerHTML = warnHtml + '<p style="font-size:12px;color:var(--text-sec);margin-top:8px">Completa los campos anteriores y vuelve a intentarlo.</p>';
+    return;
+  }
+
+  const out = document.getElementById('output-area');
+  out.innerHTML = '<div class="alert alert-blue"><span class="spinner"></span><span>Generando resumen y tips…</span></div>';
+
   try {
     const r = await fetch('/api/claude', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
-      model: 'claude-sonnet-4-6', max_tokens: 900,
-      messages: [{role:'user', content: `Eres un coach de liderazgo experto en delegación. Escribe un guión conversacional completo en primera persona para delegar una tarea.
+      model:'claude-sonnet-4-6', max_tokens:1000,
+      messages:[{role:'user', content:`Eres un coach experto en liderazgo y delegación. 
+Con los siguientes datos, genera:
+1. Un resumen estructurado en punteo de la delegación.
+2. Exactamente 5 tips concretos para hacer bien la conversación de delegación (basados en el contexto específico, no genéricos).
 
-Datos:
+Datos de la delegación:
 - Tarea: ${vals.gf1}
 - Persona: ${vals.gf2}
-- Por qué importa: ${vals.gf3||'(no especificado)'}
-- Fortalezas/desafíos: ${vals.gf4||'(no especificado)'}
-- Microtareas y niveles: ${vals.gf5||'(no especificado)'}
-- Objetivo e hitos: ${vals.gf6||'(no especificado)'}
+- Por qué es importante: ${vals.gf3}
+- Por qué puede hacerlo bien: ${vals.gf4}
+- Microtareas y niveles de autonomía: ${vals.gf5}
+- Objetivo e hitos: ${vals.gf6}
 
-Escribe el guión como texto corrido en primera persona, cálido y natural al hablarlo. Estructura en estos momentos (sin poner títulos ni bullets, solo párrafos separados):
-1. Apertura y contexto
-2. La tarea y su importancia
-3. Por qué le eliges a ella/él
-4. Las microtareas y niveles de autonomía
-5. El objetivo e hitos de seguimiento
-6. Cierre cálido: agradece a la persona por aceptar el desafío, reitera tu confianza en ella, ofrece tu disponibilidad si tiene dudas y anímala a comenzar.
-
-Máximo 300 palabras.`}]
+Responde SOLO en JSON con esta estructura exacta, sin backticks ni texto adicional:
+{
+  "resumen": {
+    "tarea": "...",
+    "persona": "...",
+    "importancia": "...",
+    "fortalezas": "...",
+    "microtareas": ["..."],
+    "objetivo": "..."
+  },
+  "tips": ["tip 1","tip 2","tip 3","tip 4","tip 5"]
+}`}]
     })});
     const d = await r.json();
-    if (!r.ok || d.error) { throw new Error(d.error || 'Error ' + r.status); }
-    const txt = d.content.filter(c => c.type === 'text').map(c => c.text).join('');
-    out.innerHTML = warnHtml + `<div class="script-box">
-      <div class="script-head"><span style="font-size:22px">🗣️</span><div><h3>Guión de la conversación de delegación</h3><p>Texto sugerido — edítalo libremente antes de usarlo</p></div></div>
-      <textarea id="script-textarea">${esc(txt)}</textarea>
-      ${warns.length===0?'<div class="alert alert-green" style="margin-top:10px"><span>✅</span><span>Guión completo. Ya tienes todo para una conversación de delegación efectiva.</span></div>':''}
-    </div>`;
-    document.getElementById('final-btns').style.display = 'block';
-    doneSection(3, 'Guión generado');
-  } catch(err) {
-    out.innerHTML = warnHtml + `<div class="alert alert-red"><span>❌</span><span><strong>Error:</strong> ${err.message} — <a href="/api/test" target="_blank" style="color:var(--red);text-decoration:underline">Verificar API key →</a></span></div>`;
-    document.getElementById('final-btns').style.display = 'block';
+    if(!r.ok||d.error){throw new Error(d.error||'Error '+r.status);}
+    const raw = d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    renderOutput(parsed, vals);
+    doneSection(3, 'Resumen generado');
+  } catch(err){
+    out.innerHTML = `<div class="alert alert-red"><span>❌</span><span><strong>Error:</strong> ${err.message} — <a href="/api/test" target="_blank" style="color:var(--red);text-decoration:underline">Verificar API key →</a></span></div>`;
   }
 }
 
-function copyScript(){
-  const ta=document.getElementById('script-textarea');
-  if(!ta){alert('Primero genera el guión.');return;}
-  navigator.clipboard.writeText(ta.value).then(()=>alert('Guión copiado al portapapeles.'));
+function renderOutput(parsed, vals){
+  const otras = getDelegableOtras();
+  const res = parsed.resumen;
+  const tips = parsed.tips || [];
+
+  // Build microtareas list
+  const microsHtml = Array.isArray(res.microtareas)
+    ? res.microtareas.map(m=>`<li style="margin-bottom:5px">${esc(m)}</li>`).join('')
+    : `<li>${esc(res.microtareas)}</li>`;
+
+  // Tips (5 from IA + fixed Ariztia tip)
+  const allTips = [...tips,
+    'Recuerda guiarte por el sello Ariztía: lidera con puertas abiertas, confía y acompáña, enseña para poder exigir. Que esta delegación sea un acto de desarrollo, no solo de distribución de carga.'
+  ];
+  const tipsHtml = allTips.map((t,i)=>`
+    <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">
+      <span style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:${i===5?'var(--amber)':'var(--accent)'};color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">${i+1}</span>
+      <span style="font-size:13px;line-height:1.6;color:${i===5?'var(--amber)':'var(--text)'}">${i===5?'<strong>Sello Ariztía:</strong> ':''} ${esc(t)}</span>
+    </div>`).join('');
+
+  const outputHtml = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px">
+      <div style="background:var(--accent);padding:14px 20px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px">📋</span>
+        <div><div style="font-size:15px;font-weight:600;color:#fff">Resumen de tu delegación</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.8)">Úsalo como referencia para preparar tu conversación</div></div>
+      </div>
+      <div style="padding:20px">
+        <div style="display:grid;gap:14px">
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
+            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">🎯 Tarea a delegar</div>
+            <div style="font-size:13px">${esc(res.tarea||vals.gf1)}</div>
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
+            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">👤 Persona elegida</div>
+            <div style="font-size:13px">${esc(res.persona||vals.gf2)}</div>
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
+            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">⭐ Por qué es importante</div>
+            <div style="font-size:13px">${esc(res.importancia||vals.gf3)}</div>
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
+            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">💪 Por qué puede hacerlo bien</div>
+            <div style="font-size:13px">${esc(res.fortalezas||vals.gf4)}</div>
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
+            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">📌 Microtareas y niveles de autonomía</div>
+            <ul style="font-size:13px;padding-left:16px;margin:0">${microsHtml}</ul>
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
+            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">🏁 Objetivo e hitos de seguimiento</div>
+            <div style="font-size:13px">${esc(res.objetivo||vals.gf6)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px">
+      <div style="background:#1A1916;padding:14px 20px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px">💡</span>
+        <div><div style="font-size:15px;font-weight:600;color:#fff">6 tips para hacer bien la conversación</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7)">El 6° es siempre el sello que nos identifica</div></div>
+      </div>
+      <div style="padding:20px">${tipsHtml}</div>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;background:var(--surface)">
+      <p style="font-size:13px;font-weight:600;margin-bottom:14px">¿Qué quieres hacer ahora?</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="openGuionModal()" style="font-size:13px">✍️ Preparar mi guión</button>
+        ${otras.length>0?`<button class="btn" onclick="elegirOtraDelgacion()" style="font-size:13px">🔁 Analizar otra tarea delegable</button>`:''}
+        <button class="btn btn-exit" onclick="openExitModal()" style="font-size:13px">✕ Salir</button>
+      </div>
+    </div>`;
+
+  document.getElementById('output-area').innerHTML = outputHtml;
+  document.getElementById('output-area').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ===== GUIÓN PROPIO ===== */
+function openGuionModal(){
+  document.getElementById('guion-modal').style.display='flex';
+  document.getElementById('feedback-output').innerHTML='';
+  renderGuionModalBtns('initial');
+  document.getElementById('guion-propio').focus();
+}
+
+function closeGuionModal(){
+  document.getElementById('guion-modal').style.display='none';
+}
+
+function renderGuionModalBtns(mode){
+  const otras = getDelegableOtras();
+  const otraBtn = otras.length>0 ? `<button class="btn btn-sm" onclick="closeGuionModal();elegirOtraDelgacion()">🔁 Analizar otra tarea</button>` : '';
+  if(mode==='initial'){
+    document.getElementById('guion-modal-btns').innerHTML = `
+      <button class="btn btn-exit btn-sm" onclick="closeGuionModal()">✕ Cerrar</button>
+      ${otraBtn}
+      <button class="btn btn-sm" onclick="copyGuionPropio()">📋 Copiar guión</button>
+      <button class="btn btn-primary btn-sm" onclick="pedirFeedback()">💬 Pedir feedback</button>`;
+  } else if(mode==='post-feedback'){
+    document.getElementById('guion-modal-btns').innerHTML = `
+      <button class="btn btn-exit btn-sm" onclick="closeGuionModal()">✕ Cerrar</button>
+      ${otraBtn}
+      <button class="btn btn-sm" onclick="editarGuion()">✏️ Editar mi guión</button>
+      <button class="btn btn-sm" onclick="copyGuionPropio()">📋 Copiar guión</button>`;
+  }
+}
+
+function editarGuion(){
+  document.getElementById('feedback-output').innerHTML='';
+  document.getElementById('guion-propio').focus();
+  renderGuionModalBtns('initial');
+}
+
+async function pedirFeedback(){
+  const guion = document.getElementById('guion-propio').value.trim();
+  if(!guion || guion.length < 30){
+    alert('Escribe tu guión primero (al menos unas pocas frases).');
+    return;
+  }
+  const feedEl = document.getElementById('feedback-output');
+  feedEl.innerHTML = '<div class="alert alert-blue"><span class="spinner"></span><span>Analizando tu guión…</span></div>';
+
+  try {
+    const r = await fetch('/api/claude', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+      model:'claude-sonnet-4-6', max_tokens:700,
+      messages:[{role:'user', content:`Eres un coach experto en liderazgo y delegación. Analiza este guión de conversación de delegación y da feedback útil y constructivo.
+
+Contexto:
+- Tarea a delegar: ${state.selTask}
+- Persona: ${state.selPerson}
+
+Guión escrito por el líder:
+"""
+${guion}
+"""
+
+Criterios a evaluar:
+1. Claridad del propósito y la importancia de la tarea
+2. Valoración de la persona (por qué la eligió)
+3. Claridad de las expectativas, autonomía y seguimiento
+4. Tono: cercano, confiado y motivador
+5. Coherencia con un liderazgo de puertas abiertas que confía, acompaña y enseña
+
+Reglas para tu feedback:
+- Si el guión está bien en general, dilo claramente y da 2-3 tips de mejora menores.
+- Si tiene problemas importantes, señálalos con claridad y directamente, sin rodeos, pero con respeto.
+- NO le digas qué escribir. Sí puedes señalar qué frase o parte no suena bien, es ambigua o poco clara.
+- Sé concreto, breve y útil. Máximo 200 palabras.
+- Termina siempre con una frase motivadora breve.
+
+Responde en texto directo, sin títulos ni bullets excesivos.`}]
+    })});
+    const d = await r.json();
+    if(!r.ok||d.error){throw new Error(d.error||'Error '+r.status);}
+    const txt = d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    feedEl.innerHTML = `
+      <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:14px 16px;margin-top:4px">
+        <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">💬 Feedback de tu coach</div>
+        <div style="font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap">${esc(txt)}</div>
+      </div>`;
+    renderGuionModalBtns('post-feedback');
+  } catch(err){
+    feedEl.innerHTML = `<div class="alert alert-red"><span>❌</span><span>${err.message}</span></div>`;
+  }
+}
+
+function copyGuionPropio(){
+  const ta = document.getElementById('guion-propio');
+  if(!ta||!ta.value.trim()){alert('Escribe tu guión primero.');return;}
+  navigator.clipboard.writeText(ta.value).then(()=>alert('Guión copiado al portapapeles ✓'));
+}
+
+/* ===== OTRA DELEGACIÓN ===== */
+function elegirOtraDelgacion(){
+  const otras = getDelegableOtras();
+  if(otras.length===0){alert('No hay otras tareas delegables pendientes.');return;}
+  if(otras.length===1){
+    // Auto-select the only one and restart from step 2
+    switchTask(otras[0]);
+    return;
+  }
+  // Show picker
+  const out = document.getElementById('output-area');
+  const rows = otras.map(t=>`
+    <div class="sel-row" onclick="switchTask({id:${t.id},text:${JSON.stringify(t.text)}})">
+      <div class="sel-dot"></div>
+      <span style="flex:1">${esc(t.text)}</span>
+      <span class="badge badge-green">Delegable</span>
+    </div>`).join('');
+  out.innerHTML = `<div class="card"><h3 style="font-size:14px;font-weight:600;margin-bottom:12px">¿Qué tarea quieres analizar ahora?</h3>${rows}</div>`;
+  out.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function switchTask(t){
+  // Keep persons and tasks, reset from step 2 (persons) with new task
+  state.selTaskId = t.id;
+  state.selTask = t.text;
+  state.selPersonId = null;
+  state.selPerson = '';
+  state.micros = [];
+  mid = 0;
+  // Reset sections 2, 3
+  for(let i=2;i<=3;i++) lockSection(i);
+  ['sum2','sum3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
+  document.getElementById('output-area').innerHTML='';
+  document.getElementById('micro-sugg').innerHTML='';
+  // Update section 1 to show new task
+  document.getElementById('s1-pills').innerHTML=`<span class="ctx-pill">🎯 ${esc(state.selTask)}</span>`;
+  // Reset person selection visually
+  document.querySelectorAll('#person-list .sel-row').forEach(r=>r.classList.remove('sel'));
+  document.getElementById('person-warnings').innerHTML='';
+  renderPersonSelect();
+  // Reopen section 1
+  const sec1 = document.getElementById('sec1');
+  sec1.classList.remove('done','locked','pending');
+  sec1.classList.add('active');
+  sec1.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function resetAll(){
   state={tasks:[],selTaskId:null,selTask:'',persons:[],selPersonId:null,selPerson:'',micros:[],view:'table'};
   tid=0;pid=0;mid=0;
-  // Reset all sections
   for(let i=1;i<=3;i++) lockSection(i);
   const sec0=document.getElementById('sec0');
   sec0.classList.remove('done','locked','pending');
   sec0.classList.add('active');
-  ['sum0','sum1','sum2','sum3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';}); 
-  document.getElementById('script-output').innerHTML='';
-  document.getElementById('final-btns').style.display='none';
+  ['sum0','sum1','sum2','sum3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
+  document.getElementById('output-area').innerHTML='';
   document.getElementById('micro-sugg').innerHTML='';
   document.getElementById('person-warnings').innerHTML='';
+  document.getElementById('task-tbody').innerHTML='';
+  document.getElementById('task-select-area').style.display='none';
   addTask();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function autoGrow(el){el.style.height='auto';el.style.height=el.scrollHeight+'px'}
-
-/* ===== MEJORAR CON IA ===== */
-function mejorarConIA(){
-  const ta = document.getElementById('script-textarea');
-  const guion = ta ? ta.value.trim() : '';
-  const prompt = `Tengo este guión para una conversación de delegación y quiero mejorarlo.
-
-Tarea a delegar: ${state.selTask}
-Persona: ${state.selPerson}
-
-Guión actual:
-${guion}
-
-Por favor:
-1. Señala qué está bien
-2. Sugiere mejoras concretas en tono, claridad o estructura
-3. Ofrece una versión mejorada del guión completo`;
-
-  const url = 'https://claude.ai/new?q=' + encodeURIComponent(prompt);
-  window.open(url, '_blank');
-}
 
 /* ===== EXIT ===== */
 function openExitModal(){
