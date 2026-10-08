@@ -17,172 +17,148 @@
   --amber:#D97706;--amber-bg:#FFFBEB;--amber-border:#FDE68A;
   --radius:10px;--radius-sm:6px;
 }
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+body{font-family:'Inter',-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-/* TOP BAR */
-.top-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+/* TOP BAR + STEPPER */
+.top-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:12px}
 .top-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .top-bar h1{font-size:15px;font-weight:600}
-.top-bar p{font-size:11px;color:var(--text-sec)}
+.top-bar p{font-size:12px;color:var(--text-sec)}
+.stepper{display:flex;gap:8px;max-width:920px;margin:20px auto 0;padding:0 20px}
+.st{flex:1;display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);font:inherit;color:var(--text-muted);cursor:pointer;text-align:left}
+.st:disabled{cursor:default;opacity:.6}
+.st .n{width:26px;height:26px;border-radius:50%;border:2px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.st .t{font-size:13px;font-weight:600;line-height:1.2}
+.st.done{color:var(--text)}
+.st.done .n{background:var(--green);border-color:var(--green);color:#fff}
+.st.active{color:var(--text);border-color:var(--accent)}
+.st.active .n{background:var(--accent);border-color:var(--accent);color:#fff}
+@media(max-width:600px){.st:not(.active) .t{display:none}.st:not(.active){flex:0 0 52px;justify-content:center}}
 
 /* LAYOUT */
-.layout{max-width:860px;margin:0 auto;padding:28px 20px 80px}
-
-/* ACCORDION SECTIONS */
-.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;transition:all 0.2s}
-.section.locked{opacity:0.5;pointer-events:none}
-.section-header{display:flex;align-items:center;gap:14px;padding:18px 20px;cursor:default}
-.step-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--text-muted);flex-shrink:0;transition:all 0.2s}
-.section.active .step-circle{border-color:var(--accent);background:var(--accent);color:#fff}
-.section.done .step-circle{border-color:var(--green);background:var(--green);color:#fff}
-.section-title{font-size:16px;font-weight:600}
-.section-subtitle{font-size:12px;color:var(--text-sec);margin-top:2px}
-.section-summary{margin-left:auto;font-size:12px;color:var(--text-sec);text-align:right}
-.section-body{padding:0 20px 20px;border-top:1px solid var(--border)}
-.section.locked .section-body,.section.pending .section-body{display:none}
+.layout{max-width:920px;margin:16px auto 0;padding:0 20px 80px}
+.panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.panel.active{display:block}
+h2{font-size:18px;font-weight:600;margin-bottom:4px}
+h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.lead{font-size:13px;color:var(--text-sec);margin-bottom:14px;max-width:62ch}
+.lbl{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.sep{border:none;border-top:1px solid var(--border);margin:24px 0}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:24px;padding-top:16px;border-top:1px solid var(--border)}
 
 /* FORMS */
-input[type=text],textarea,select{font-family:inherit;font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;outline:none;transition:border-color 0.15s;width:100%}
-input[type=text]:focus,textarea:focus,select:focus{border-color:var(--accent);background:#fff}
-textarea{resize:vertical;min-height:72px;line-height:1.6}
+input[type=text],textarea,select{font-family:inherit;font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;width:100%;transition:border-color .15s}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--accent);background:#fff;outline:none}
+textarea{resize:vertical;line-height:1.6}
 
 /* BUTTONS */
-.btn{font-family:inherit;font-size:13px;font-weight:500;padding:9px 18px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);cursor:pointer;transition:all 0.12s;display:inline-flex;align-items:center;gap:6px}
+.btn{font-family:inherit;font-size:13px;font-weight:500;padding:9px 18px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .btn:hover{background:var(--surface2)}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-primary:hover{background:#1d4ed8;border-color:#1d4ed8}
 .btn-sm{padding:6px 13px;font-size:12px}
-.add-btn{color:var(--accent);font-size:12px;font-weight:500;background:none;border:none;cursor:pointer;padding:6px 0;display:inline-flex;align-items:center;gap:4px;font-family:inherit}
+.btn-quiet{border-color:transparent;background:none;color:var(--text-sec)}
+.add-btn{color:var(--accent);font-size:13px;font-weight:500;background:none;border:none;cursor:pointer;padding:6px 0;font-family:inherit}
 .add-btn:hover{text-decoration:underline}
-.del-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:4px;border-radius:4px;line-height:1;transition:color 0.12s;font-family:inherit}
+.del-btn,.mv-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:4px 6px;border-radius:4px;line-height:1;font-family:inherit}
 .del-btn:hover{color:var(--red)}
-
-/* BADGES */
-.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
-.badge-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
-.badge-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
-.badge-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
-.badge-blue{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-border)}
-.badge-gray{background:var(--surface2);color:var(--text-sec);border:1px solid var(--border)}
+.mv-btn:hover:not(:disabled){color:var(--accent)}
+.mv-btn:disabled{opacity:.3;cursor:default}
 
 /* ALERTS */
-.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;line-height:1.5;margin-top:8px;display:flex;gap:8px;align-items:flex-start}
+.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;line-height:1.5;margin-top:10px}
 .alert-green{background:var(--green-bg);color:#15803D;border:1px solid var(--green-border)}
 .alert-red{background:var(--red-bg);color:#B91C1C;border:1px solid var(--red-border)}
 .alert-amber{background:var(--amber-bg);color:#B45309;border:1px solid var(--amber-border)}
 .alert-blue{background:var(--accent-bg);color:#1d4ed8;border:1px solid var(--accent-border)}
+.alert-gray{background:var(--surface2);color:var(--text-sec);border:1px solid var(--border)}
+.decide{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.err{color:var(--red);font-size:13px;margin-top:12px}
+.ctx-pill{display:inline-block;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--accent);font-weight:500;margin:0 6px 14px 0;max-width:100%}
 
-/* CONTEXT PILL */
-.ctx-pill{display:inline-flex;align-items:center;gap:6px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--accent);font-weight:500;margin-bottom:14px;margin-right:6px}
+/* STEP 1: criteria */
+.crit-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.crit-grid{align-items:start}
+details.crit-det summary{cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:8px;list-style:none}
+details.crit-det summary::-webkit-details-marker{display:none}
+details.crit-det summary::after{content:'▾';color:var(--text-muted);font-size:12px;margin-left:auto}
+details.crit-det:not([open]) summary::after{content:'▸'}
+.cnt{font-weight:400;color:var(--text-sec);font-size:12px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.crit{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;cursor:pointer;font-size:13px;line-height:1.45}
+.crit:hover{background:var(--bg)}
+.crit input{margin-top:3px;flex-shrink:0;accent-color:var(--green)}
+.crit.no input{accent-color:var(--red)}
+@media(max-width:700px){.crit-grid{grid-template-columns:1fr}}
 
-/* TASK TABLE */
-.tbl-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
-table.tbl{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface)}
-.tbl th{background:var(--surface2);padding:10px 12px;text-align:left;font-weight:600;font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border);white-space:nowrap}
-.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
-.tbl tr:last-child td{border-bottom:none}
-.tbl td input[type=text]{background:transparent;border-color:transparent;padding:4px 6px}
-.task-name-input{width:100%;min-width:140px;white-space:pre-wrap;word-break:break-word}
-.tbl td input[type=text]:focus{background:#fff;border-color:var(--accent)}
-.crit-list{display:flex;flex-direction:column;gap:4px}
-.crit-item{display:flex;gap:6px;align-items:flex-start;cursor:pointer;font-size:11px;color:var(--text);line-height:1.4}
-.crit-item input[type=checkbox]{width:13px;height:13px;margin-top:1px;flex-shrink:0;accent-color:var(--accent);cursor:pointer}
-.crit-item.no-c input[type=checkbox]{accent-color:var(--red)}
+/* STEP 1: persons */
+.ctx1:empty{display:none}
+.pcard{border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:10px}
+.pcard.sel{border-color:var(--accent);background:var(--accent-bg)}
+.phead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.phead input{flex:1;min-width:150px;font-weight:600;background:#fff}
+.psum{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.pcard.sel .psum,.pcard.sel .srow,.pcard.sel .pfoot{border-color:var(--accent-border)}
+.chips{font-size:12px;color:var(--text-sec);display:flex;gap:12px;flex-wrap:wrap;flex:1;min-width:200px}
+.chips b{color:var(--text)}
+.star{font-size:12px;color:var(--amber);font-weight:500}
+.total{font-weight:600;font-size:13px}
+.srow{display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:center;padding:9px 0;border-top:1px solid var(--border)}
+.srow:first-of-type{margin-top:10px}
+.lb b{font-size:13px}
+.lb small{display:block;font-size:12px;color:var(--text-sec)}
+.pills{display:flex;gap:4px}
+.pill{width:32px;height:32px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface);cursor:pointer;font:inherit;font-size:13px;font-weight:600;color:var(--text-sec)}
+.pill:hover{border-color:var(--accent)}
+.pill.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pfoot{padding-top:10px;border-top:1px solid var(--border)}
+@media(max-width:520px){.srow{grid-template-columns:1fr}}
 
-/* CONFIRM BOX */
-.confirm-box{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:12px 14px;margin-top:8px}
-.confirm-box p{font-size:12px;color:#92400E;margin-bottom:10px;line-height:1.5}
-.confirm-btns{display:flex;gap:8px}
+/* STEP 2 */
+.stp{margin-bottom:14px}
+.srow2{display:grid;grid-template-columns:28px 1fr auto;grid-template-areas:"n t a" ". s s";gap:8px;align-items:center}
+.srow2 .num{grid-area:n;font-size:13px;font-weight:600;color:var(--text-muted);text-align:center}
+.srow2 input{grid-area:t}
+.srow2 .acts{grid-area:a;display:flex;align-items:center}
+.srow2 .qd{grid-area:s;display:flex;align-items:center;gap:8px}
+.qd span{font-size:12px;color:var(--text-sec);white-space:nowrap}
+.qd select{border-left-width:4px}
 
-/* SELECT LIST */
-.sel-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-top:16px}
-.sel-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
-.sel-card .hint{font-size:12px;color:var(--text-sec);margin-bottom:12px}
+/* STEP 3 */
+.ctx3{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;font-size:13px}
+.ctx3 ol{margin:6px 0 0 20px;color:var(--text-sec)}
+.ctx3 ol b{color:var(--text);font-weight:500}
+.write-grid{display:grid;grid-template-columns:1fr 290px;gap:20px;align-items:start}
+#script{min-height:380px;font-size:14px;line-height:1.7;padding:14px;background:#fff}
+.guide{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;background:var(--bg)}
+.guide h3{font-size:14px;margin-bottom:2px}
+.guide .sub{font-size:12px;color:var(--text-sec);margin-bottom:8px}
+.gitem{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--border);cursor:pointer}
+.gitem input{margin-top:3px;flex-shrink:0;accent-color:var(--green)}
+.gitem b{display:block;font-size:13px}
+.gitem span span{font-size:12px;color:var(--text-sec);display:block}
+.gitem.cov b,.gitem.cov span span{color:var(--text-muted)}
+.gitem.cov b{text-decoration:line-through}
+@media(max-width:820px){.write-grid{grid-template-columns:1fr}.guide{order:-1}}
+.tips{margin-top:20px;border:1px solid var(--accent-border);background:var(--accent-bg);border-radius:var(--radius);padding:14px 16px;font-size:13px}
+.tips h3{font-size:14px;color:#1d4ed8;margin-bottom:6px}
+.tips ul{margin-left:18px;color:var(--text)}
+.tips li{margin-bottom:4px}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 
-.sel-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;margin-bottom:6px;font-size:13px;transition:all 0.12s;background:var(--surface);user-select:none}
-.sel-row:hover{border-color:var(--accent);background:var(--accent-bg)}
-.sel-row.sel{border-color:var(--accent);background:var(--accent-bg)}
-.sel-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border-strong);flex-shrink:0;transition:all 0.12s;position:relative}
-.sel-row.sel .sel-dot{border-color:var(--accent);background:var(--accent)}
-.sel-row.sel .sel-dot::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:#fff}
-
-/* PERSON TABLE */
-.person-table th{text-align:center;min-width:130px}
-.person-table th:first-child{text-align:left;min-width:110px}
-.th-sub{font-size:10px;font-weight:400;color:var(--text-muted);display:block;margin-top:4px;line-height:1.4;white-space:normal}
-.person-table td{text-align:center;vertical-align:middle}
-.person-table td:first-child{text-align:left}
-.person-table td input[type=text]{background:transparent;border-color:transparent;padding:4px 6px;font-size:12px;font-weight:500}
-.person-table td input[type=text]:focus{background:#fff;border-color:var(--accent)}
-.score-pills{display:flex;gap:3px;justify-content:center}
-.sp{width:26px;height:26px;border-radius:50%;font-size:11px;font-weight:500;line-height:26px;text-align:center;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--text-sec);transition:all 0.1s;user-select:none}
-.sp:hover{border-color:var(--accent);color:var(--accent)}
-.sp.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
-
-/* SLIDER VIEW */
-.vtb-group{display:flex;gap:6px;margin-bottom:14px}
-.vtb{font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);cursor:pointer;color:var(--text-sec);font-family:inherit;transition:all 0.12s}
-.vtb.active{background:var(--accent-bg);color:var(--accent);border-color:var(--accent-border)}
-.slider-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
-.slider-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.slider-row{margin-bottom:10px}
-.slider-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
-.slider-top .slbl{color:var(--text-sec);font-weight:500}
-.slider-top .slbl small{font-weight:400;color:var(--text-muted);display:block;font-size:10px;line-height:1.3;margin-top:1px}
-.slider-top .sval{font-weight:600;color:var(--accent)}
-input[type=range]{width:100%;-webkit-appearance:none;height:4px;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px var(--accent)}
-
-/* POKER */
-.poker-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px}
-.pk{border-radius:10px;padding:10px 4px 8px;text-align:center;cursor:pointer;border:3px solid transparent;transition:all 0.12s}
-.pk:hover{transform:translateY(-2px);filter:brightness(1.06)}
-.pk.sel{border-color:#1A1916;box-shadow:0 0 0 2px #fff inset}
-.pk-num{font-size:22px;font-weight:700;color:#fff;display:block;text-shadow:0 1px 3px rgba(0,0,0,0.3)}
-.pk-name{font-size:9px;font-weight:700;color:#fff;display:block;margin-top:3px;text-transform:uppercase;letter-spacing:0.05em;text-shadow:0 1px 2px rgba(0,0,0,0.4)}
-.pk-ico{font-size:13px;display:block;margin-bottom:3px}
-.pk1{background:#E91E8C}.pk2{background:#F44336}.pk3{background:#FF9800}.pk4{background:#F9C513}.pk5{background:#4CAF50}.pk6{background:#2196F3}.pk7{background:#9C27B0}
-.poker-desc{padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;margin-bottom:14px;font-weight:500;display:none}
-
-/* MICRO TABLE */
-.micro-table th{text-align:left}
-.micro-table td{vertical-align:middle}
-.micro-table td input[type=text]{background:transparent;border-color:transparent;font-size:12px;padding:4px 6px}
-.micro-table td input[type=text]:focus{background:#fff;border-color:var(--accent)}
-.micro-table td select{font-size:11px;padding:4px 6px;background:var(--bg)}
-.move-btns{display:flex;flex-direction:column;gap:2px}
-.move-btn{width:20px;height:18px;border:1px solid var(--border);background:var(--bg);border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--text-sec);transition:all 0.1s;font-family:inherit}
-.move-btn:hover{background:var(--surface2)}
-.move-btn:disabled{opacity:0.3;cursor:default}
-
-/* GUION */
-.gf-field{margin-bottom:18px}
-.gf-label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
-.gf-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--surface2);flex-shrink:0}
-.auto-tag{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);font-weight:500}
-
-/* SCRIPT */
-.script-box{background:linear-gradient(135deg,#EFF6FF 0%,#F0FDF4 100%);border:1px solid var(--accent-border);border-radius:var(--radius);padding:20px;margin-top:16px}
-.script-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.script-head h3{font-size:14px;font-weight:600;color:var(--accent)}
-.script-head p{font-size:11px;color:var(--text-sec)}
-#script-textarea{width:100%;font-size:14px;line-height:1.8;min-height:250px;border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:14px;background:#fff;color:var(--text);font-family:inherit;resize:vertical}
-
-/* LOADING */
-.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* SECTION ACTIONS */
-.sec-actions{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
-
-/* EXIT BUTTON */
-.btn-exit{color:var(--text-muted);border-color:transparent;background:transparent;font-size:12px}
-.btn-exit:hover{color:var(--red);background:var(--red-bg);border-color:var(--red-border)}
-
-/* FINAL */
-.final-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-
-@media(max-width:600px){.poker-grid{grid-template-columns:repeat(4,1fr)}}
+/* PRINT */
+#print-sheet{display:none}
+@media print{
+  body{background:#fff}
+  .top-bar,.stepper,.layout{display:none!important}
+  #print-sheet{display:block;color:#000;font-size:12pt;line-height:1.5}
+  #print-sheet h1{font-size:18pt;margin-bottom:10pt}
+  #print-sheet h2{font-size:13pt;margin:16pt 0 6pt}
+  #print-sheet ol{margin-left:18pt}
+  #print-sheet .ps{white-space:pre-wrap;border:1px solid #999;padding:10pt;border-radius:4pt}
+  #print-sheet .notes{height:110pt;border:1px solid #999;border-radius:4pt}
+}
 </style>
 </head>
 <body>
@@ -191,1083 +167,461 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="top-icon">🎯</div>
   <div>
     <h1>Herramienta de Delegación</h1>
-    <p>Guía paso a paso para delegar con claridad y confianza</p>
+    <p>Prepara con claridad una conversación de delegación</p>
   </div>
 </div>
 
-<div class="layout">
+<nav class="stepper" aria-label="Pasos">
+  <button class="st active" id="st1" onclick="go(1)"><span class="n">1</span><span class="t">Qué y a quién</span></button>
+  <button class="st" id="st2" onclick="go(2)" disabled><span class="n">2</span><span class="t">Pasos y nivel de autonomía</span></button>
+  <button class="st" id="st3" onclick="go(3)" disabled><span class="n">3</span><span class="t">Tu conversación</span></button>
+</nav>
 
-  <!-- SECCIÓN 1 -->
-  <div class="section active" id="sec0">
-    <div class="section-header">
-      <div class="step-circle">1</div>
+<main class="layout">
+
+  <!-- PASO 1 -->
+  <section class="panel active" id="p1">
+    <h2>¿Qué delegar y a quién?</h2>
+    <p class="lead">Escribe qué quieres delegar (una tarea, un proyecto o una decisión), revisa si conviene delegarlo y elige a la persona.</p>
+
+    <label class="lbl" for="task">La tarea, proyecto o decisión que quieres delegar</label>
+    <textarea id="task" rows="2" placeholder="Ej.: Coordinar la reunión mensual del equipo, o decidir qué proveedor contratar" oninput="S.task=this.value;renderCtx1()"></textarea>
+
+    <p class="lbl" style="margin-top:18px">¿Conviene delegarla? Marca todas las señales que se cumplan</p>
+    <div class="crit-grid">
+      <details class="crit-det" open><summary><span class="dot" style="background:var(--green)"></span>Señales para delegar <span class="cnt" id="cnt-si"></span></summary><div id="crit-si"></div></details>
+      <details class="crit-det" open><summary><span class="dot" style="background:var(--red)"></span>Señales para no delegar <span class="cnt" id="cnt-no"></span></summary><div id="crit-no"></div></details>
+    </div>
+    <div id="check-result" aria-live="polite"></div>
+
+    <hr class="sep">
+
+    <h3>¿A quién se lo delegarías?</h3>
+    <div class="ctx1" id="ctx1"></div>
+    <p class="lead">Escribe el nombre de cada persona que podría encargarse de esto. Despliega "Evaluar" para puntuarla del 1 al 5 y luego elige a una.</p>
+    <div id="persons"></div>
+    <button class="add-btn" onclick="addPerson()">＋ Agregar persona</button>
+    <div id="p-warn"></div>
+
+    <div class="err" id="e1" role="alert"></div>
+    <div class="actions"><span></span><button class="btn btn-primary" onclick="goStep2()">Continuar</button></div>
+  </section>
+
+  <!-- PASO 2 -->
+  <section class="panel" id="p2">
+    <div id="ctx2"></div>
+    <h2>Pasos y nivel de autonomía</h2>
+    <p class="lead">Escribe todos los pasos, de principio a fin y en el orden en que ocurrirían. Luego indica, en cada paso, cuánta autonomía tendrá la persona.</p>
+
+    <div id="steps"></div>
+    <button class="add-btn" onclick="addStep()">＋ Agregar paso</button>
+
+    <div class="err" id="e2" role="alert"></div>
+    <div class="actions">
+      <button class="btn" onclick="go(1)">← Atrás</button>
+      <button class="btn btn-primary" onclick="goStep3()">Continuar</button>
+    </div>
+  </section>
+
+  <!-- PASO 3 -->
+  <section class="panel" id="p3">
+    <h2>Tu conversación</h2>
+    <p class="lead">Escribe cómo se lo dirás, con tus propias palabras y en un solo texto. Sigue las preguntas de la guía en orden y léelo en voz alta mientras escribes.</p>
+
+    <div class="ctx3" id="ctx3"></div>
+
+    <div class="write-grid">
       <div>
-        <div class="section-title">¿Qué delegar?</div>
-        <div class="section-subtitle">Ingresa tus tareas y marca los criterios</div>
+        <label class="lbl" for="script">Mi texto</label>
+        <textarea id="script" placeholder="Escribe aquí lo que le dirás a la persona…" oninput="S.script=this.value"></textarea>
       </div>
-      <div class="section-summary" id="sum0"></div>
+      <aside class="guide" aria-label="Guía para escribir">
+        <h3>Guía para tu texto</h3>
+        <p class="sub">Marca cada punto cuando lo hayas cubierto.</p>
+        <div id="guide"></div>
+      </aside>
     </div>
-    <div class="section-body">
-      <div class="tbl-wrap">
-        <table class="tbl">
-          <thead>
-            <tr>
-              <th style="min-width:150px">Tarea</th>
-              <th style="min-width:220px">✅ Delegar si se cumplen ≥ 2</th>
-              <th style="min-width:200px">🚫 No delegar si se cumple ≥ 1</th>
-              <th style="min-width:90px;text-align:center">Resultado</th>
-              <th style="width:30px"></th>
-            </tr>
-          </thead>
-          <tbody id="task-tbody"></tbody>
-        </table>
-      </div>
-      <button class="add-btn" onclick="addTask()" style="margin-top:10px">＋ Agregar tarea</button>
 
-      <div id="confirm-area"></div>
-
-      <div id="task-select-area" style="display:none">
-        <div class="sel-card">
-          <h3>Selecciona la tarea que delegarás</h3>
-          <p class="hint">Elige una tarea delegable de la lista, o escribe una de ejemplo si quieres practicar el proceso.</p>
-          <div id="delegable-list"></div>
-          <div style="margin-top:8px">
-            <input type="text" id="custom-task" placeholder="Si no tienes nada que delegar, ingresa aquí una tarea delegable para hacer el ejercicio">
-          </div>
-        </div>
-        <div class="sec-actions">
-          <button class="btn btn-exit" onclick="openExitModal()">✕ Salir</button>
-          <button class="btn btn-primary" onclick="confirmStep0()">Continuar → ¿A quién delegar? →</button>
-        </div>
-      </div>
+    <div class="tips">
+      <h3>Te sugerimos revisar tu texto con otra persona</h3>
+      <ul>
+        <li>Léeselo en voz alta: lo que suena raro al decirlo, conviene cambiarlo.</li>
+        <li>Pídele que cuente con sus palabras qué entendió que hay que lograr y para cuándo.</li>
+        <li>Pregúntale qué cambiaría para que suene más como tú.</li>
+      </ul>
     </div>
-  </div>
 
-  <!-- SECCIÓN 2 -->
-  <div class="section locked pending" id="sec1">
-    <div class="section-header">
-      <div class="step-circle">2</div>
-      <div>
-        <div class="section-title">¿A quién delegar?</div>
-        <div class="section-subtitle" id="sub1">Evalúa a cada persona de tu equipo</div>
-      </div>
-      <div class="section-summary" id="sum1"></div>
+    <div class="err" id="e3" role="alert"></div>
+    <div class="row-btns">
+      <button class="btn btn-primary" id="copy-btn" onclick="copyScript()">📋 Copiar texto</button>
+      <button class="btn" onclick="printSheet()">🖨️ Imprimir</button>
     </div>
-    <div class="section-body">
-      <div id="s1-pills"></div>
 
-      <div class="vtb-group">
-        <button class="vtb active" id="vt-table" onclick="setView('table')">📊 Tabla comparativa</button>
-        <button class="vtb" id="vt-slider" onclick="setView('slider')">🎚️ Sliders</button>
-      </div>
-
-      <div id="view-table">
-        <div class="tbl-wrap">
-          <table class="tbl person-table">
-            <thead>
-              <tr>
-                <th>Persona</th>
-                <th>¿Sabe?<span class="th-sub">Conocimiento y experiencia para asegurar calidad (1=nada, 5=experto/a)</span></th>
-                <th>¿Puede?<span class="th-sub">Tiempo disponible y prioridades (1=sin tiempo, 5=mucho espacio)</span></th>
-                <th>¿Quiere?<span class="th-sub">Motivación para esta tarea (1=la desmotiva, 5=la motiva mucho)</span></th>
-                <th>¿Riesgo?<span class="th-sub">Tranquilidad al delegarle (1=muy intranquilo/a, 5=muy tranquilo/a)</span></th>
-                <th>¿Equidad?<span class="th-sub">Balance de cargas del equipo (1=más desequilibrio, 5=más equilibrio)</span></th>
-                <th>Total</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="person-tbody"></tbody>
-          </table>
-        </div>
-        <button class="add-btn" onclick="addPerson()" style="margin-top:10px">＋ Agregar persona</button>
-      </div>
-
-      <div id="view-slider" style="display:none">
-        <div id="slider-cards"></div>
-        <button class="add-btn" onclick="addPerson()">＋ Agregar persona</button>
-      </div>
-
-      <div id="person-warnings" style="margin-top:10px"></div>
-
-      <div id="person-select-area" style="display:none;margin-top:16px">
-        <div class="sel-card">
-          <h3>¿A quién delegarás?</h3>
-          <p class="hint">Ordenadas de mayor a menor puntaje.</p>
-          <div id="person-list"></div>
-        </div>
-      </div>
-
-      <div class="sec-actions">
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-sm" onclick="editStep(0)">← Editar paso anterior</button>
-          <button class="btn btn-exit btn-sm" onclick="openExitModal()">✕ Salir</button>
-        </div>
-        <button class="btn btn-primary" onclick="confirmStep1()">Continuar → ¿Cuánto delegar? →</button>
-      </div>
+    <div class="actions">
+      <button class="btn" onclick="go(2)">← Atrás</button>
+      <button class="btn btn-quiet" onclick="newTask()">🔁 Delegar otro desafío</button>
     </div>
-  </div>
+  </section>
 
-  <!-- SECCIÓN 3 -->
-  <div class="section locked pending" id="sec2">
-    <div class="section-header">
-      <div class="step-circle">3</div>
-      <div>
-        <div class="section-title">¿Cuánto delegar?</div>
-        <div class="section-subtitle" id="sub2">Define el nivel de autonomía por microtarea</div>
-      </div>
-      <div class="section-summary" id="sum2"></div>
-    </div>
-    <div class="section-body">
-      <div id="s2-pills"></div>
+</main>
 
-      <div class="poker-grid">
-        <div class="pk pk1" onclick="selectPoker(1,this)"><span class="pk-ico">👤</span><span class="pk-num">1</span><span class="pk-name">Decir</span></div>
-        <div class="pk pk2" onclick="selectPoker(2,this)"><span class="pk-ico">👤→👥</span><span class="pk-num">2</span><span class="pk-name">Vender</span></div>
-        <div class="pk pk3" onclick="selectPoker(3,this)"><span class="pk-ico">👤💬👥</span><span class="pk-num">3</span><span class="pk-name">Consultar</span></div>
-        <div class="pk pk4" onclick="selectPoker(4,this)"><span class="pk-ico">👤🤝👥</span><span class="pk-num">4</span><span class="pk-name">Acordar</span></div>
-        <div class="pk pk5" onclick="selectPoker(5,this)"><span class="pk-ico">👥💬👤</span><span class="pk-num">5</span><span class="pk-name">Aconsejar</span></div>
-        <div class="pk pk6" onclick="selectPoker(6,this)"><span class="pk-ico">👥→👤</span><span class="pk-num">6</span><span class="pk-name">Preguntar</span></div>
-        <div class="pk pk7" onclick="selectPoker(7,this)"><span class="pk-ico">👥</span><span class="pk-num">7</span><span class="pk-name">Delegar</span></div>
-      </div>
-      <div id="poker-desc" class="poker-desc"></div>
-
-      <div class="tbl-wrap">
-        <table class="tbl micro-table">
-          <thead>
-            <tr>
-              <th style="width:36px;text-align:center">↕</th>
-              <th>Microtarea</th>
-              <th style="min-width:175px">Nivel de delegación</th>
-              <th style="width:30px"></th>
-            </tr>
-          </thead>
-          <tbody id="micro-tbody"></tbody>
-        </table>
-      </div>
-      <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
-        <button class="add-btn" onclick="addMicro()">＋ Agregar microtarea</button>
-        <button class="add-btn" style="color:var(--text-sec)" onclick="suggestMicros()">✨ Sugerir con IA</button>
-      </div>
-      <div id="micro-sugg" style="margin-top:10px"></div>
-
-      <div class="sec-actions">
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-sm" onclick="editStep(1)">← Editar paso anterior</button>
-          <button class="btn btn-exit btn-sm" onclick="openExitModal()">✕ Salir</button>
-        </div>
-        <button class="btn btn-primary" onclick="confirmStep2()">Continuar → ¿Cómo delegar? →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECCIÓN 4 -->
-  <div class="section locked pending" id="sec3">
-    <div class="section-header">
-      <div class="step-circle">4</div>
-      <div>
-        <div class="section-title">¿Cómo delegar?</div>
-        <div class="section-subtitle">Agrega los elementos faltantes para completar tu delegación</div>
-      </div>
-      <div class="section-summary" id="sum3"></div>
-    </div>
-    <div class="section-body">
-      <div id="s3-pills"></div>
-      <div id="guion-fields"></div>
-
-      <div class="sec-actions">
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-sm" onclick="editStep(2)">← Editar paso anterior</button>
-          <button class="btn btn-exit btn-sm" onclick="openExitModal()">✕ Salir</button>
-        </div>
-        <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="generateResumen()">📋 Generar resumen de delegación</button>
-      </div>
-
-      <div id="output-area" style="margin-top:20px"></div>
-    </div>
-  </div>
-
-  <!-- MODAL: ESCRIBIR GUIÓN PROPIO -->
-  <div id="guion-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px">
-    <div style="background:var(--surface);border-radius:var(--radius);padding:28px 24px;max-width:600px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.2)">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-        <span style="font-size:22px">✍️</span>
-        <h3 style="font-size:16px;font-weight:600">Escribe tu guión de delegación</h3>
-      </div>
-      <p style="font-size:12px;color:var(--text-sec);margin-bottom:16px;line-height:1.6">Usa el resumen como base. Escribe en primera persona, con tu propio estilo. Puedes pedir feedback cuando termines.</p>
-      <textarea id="guion-propio" rows="10" style="width:100%;font-size:13px;line-height:1.8;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;background:var(--bg);color:var(--text);font-family:inherit;resize:vertical" placeholder="Escribe aquí tu guión…"></textarea>
-      <div id="feedback-output" style="margin-top:14px"></div>
-      <div id="guion-modal-btns" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;justify-content:flex-end">
-        <button class="btn btn-exit btn-sm" onclick="closeGuionModal()">✕ Cerrar</button>
-        <button class="btn btn-sm" onclick="pedirFeedback()">💬 Pedir feedback</button>
-        <button class="btn btn-sm" onclick="copyGuionPropio()">📋 Copiar guión</button>
-      </div>
-    </div>
-  </div>
-
-<!-- EXIT MODAL -->
-<div id="exit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;display:none;align-items:center;justify-content:center">
-  <div style="background:var(--surface);border-radius:var(--radius);padding:28px 24px;max-width:380px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
-    <div style="font-size:22px;margin-bottom:10px">👋</div>
-    <h3 style="font-size:16px;font-weight:600;margin-bottom:8px">¿Salir del proceso?</h3>
-    <p style="font-size:13px;color:var(--text-sec);line-height:1.6;margin-bottom:20px">Puedes volver cuando quieras. Tu progreso no se guarda, pero tienes lo que trabajaste hasta aquí.</p>
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn btn-sm" onclick="closeExitModal()">Seguir trabajando</button>
-      <button class="btn btn-sm btn-primary" onclick="doExit()" style="background:var(--red);border-color:var(--red)">Sí, salir</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: NUEVA DELEGACIÓN (conservando el qué) -->
-<div id="nueva-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:150;align-items:center;justify-content:center">
-  <div style="background:var(--surface);border-radius:var(--radius);padding:28px 24px;max-width:440px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.22)">
-    <div style="font-size:26px;margin-bottom:10px">🔁</div>
-    <h3 style="font-size:16px;font-weight:600;margin-bottom:8px">Analizar otra tarea delegable</h3>
-    <p style="font-size:13px;color:var(--text-sec);line-height:1.6;margin-bottom:6px">
-      Se conservará el listado de tareas que ya analizaste en el <strong>paso 1</strong>, pero se reiniciará todo lo demás (a quién, cuánto y cómo).
-    </p>
-    <div class="alert alert-amber" style="margin-bottom:18px">
-      <span>⚠️</span>
-      <span>Si tienes un guión escrito que quieres guardar, <strong>cópialo antes de continuar</strong> — se perderá al avanzar.</span>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-sm" id="nueva-copy-btn" onclick="copyAndContinue()" style="justify-content:center">📋 Copiar guión y continuar</button>
-      <button class="btn btn-primary btn-sm" onclick="doNuevaDelegacion()" style="justify-content:center">▶ Continuar sin copiar</button>
-      <button class="btn btn-exit btn-sm" onclick="closeNuevaModal()" style="justify-content:center">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-</div><!-- layout -->
+<div id="print-sheet"></div>
 
 <script>
-/* ===== CONSTANTS ===== */
+/* ===== DATA ===== */
 const SI_C=[
-  "La puede hacer otra persona sin perder calidad",
-  "Proceso conocido o conocimiento disponible en el equipo",
-  "Se aprende rápido",
-  "Es repetitiva o consume tiempo que necesito en otro lado",
-  "Es una oportunidad de desarrollo para alguien",
-  "Otra persona es más experta en el tema",
-  "No requiere mi criterio político o estratégico",
-  "Tiene que ver con ejecución, análisis, coordinación o desarrollo"
+  'Otra persona, distinta de mí, puede encargarse de esto sin perder calidad.',
+  'Es un proceso o un tipo de decisión que ya se conoce.',
+  'El conocimiento necesario está disponible en el equipo.',
+  'Se aprende rápido.',
+  'Es algo que se repite con frecuencia.',
+  'Me quita tiempo que necesito para otras prioridades.',
+  'Es una oportunidad de desarrollo para alguien.',
+  'Otra persona es más experta que yo en el tema.',
+  'No requiere mi criterio político o estratégico.',
+  'Se trata de ejecución, análisis, coordinación o desarrollo.'
 ];
 const NO_C=[
-  "Criterio crítico, incorpora la cultura o es decisión de alto impacto",
-  "Es altamente sensible",
-  "Requiere mi criterio profesional específico",
-  "Requiere un contexto que otros no tienen",
-  "Soy el/la principal responsable en esta etapa clave",
-  "Delegarla puede generar mucho riesgo con alto costo"
-];
-const PK_COL=['#E91E8C','#F44336','#FF9800','#F9C513','#4CAF50','#2196F3','#9C27B0'];
-const PK_NAME=['Decir','Vender','Consultar','Acordar','Aconsejar','Preguntar','Delegar'];
-const PK_DESC=[
-  'Tú decides y les informas. Sin discusión.',
-  'Decides y te esfuerzas en convencerles del porqué.',
-  'Consultas su opinión antes de decidir tú.',
-  'Acordáis la decisión juntos, de forma conjunta.',
-  'Ellos deciden; tú puedes asesorarles si lo piden.',
-  'Ellos deciden y te preguntan si lo necesitan.',
-  'Autonomía total: ellos deciden y ejecutan sin consultarte.'
+  'Tiene alto impacto para el equipo o la organización.',
+  'Refleja o define la cultura del equipo.',
+  'Maneja información confidencial.',
+  'Es un tema delicado con personas, clientes o relaciones clave.',
+  'Requiere mi criterio profesional específico.',
+  'Requiere un contexto que otros no tienen.',
+  'Soy la persona principal responsable en esta etapa clave.',
+  'Un error tendría un costo alto y sería difícil de corregir.'
 ];
 const SK=['sabe','puede','quiere','riesgo','equidad'];
-const SK_LBL={
-  sabe:  {t:'¿Sabe?',    d:'Conocimiento y experiencia para asegurar calidad y velocidad (1=nada, 5=experto/a)'},
-  puede: {t:'¿Puede?',   d:'Tiene tiempo o espacio y aborda prioridades iguales o menores (1=sin tiempo, 5=mucho espacio)'},
-  quiere:{t:'¿Quiere?',  d:'Quiere aprender y desarrollar esta tarea, le significa motivación (1=la desmotiva, 5=la motiva mucho)'},
-  riesgo:{t:'¿Riesgo?',  d:'Estás tranquilo/a con el riesgo de delegársela (1=muy intranquilo/a, 5=muy tranquilo/a)'},
-  equidad:{t:'¿Equidad?',d:'Potencia el equilibrio de cargas y oportunidades del equipo (1=más desequilibrio, 5=más equilibrio)'}
+const SKL={
+  sabe:['¿Sabe?','Conoce el tema lo suficiente para hacerlo bien (1 = nada, 5 = experto/a)'],
+  puede:['¿Puede?','Tiene tiempo y espacio en sus prioridades (1 = sin tiempo, 5 = mucho espacio)'],
+  quiere:['¿Quiere?','Le motiva esto (1 = lo desmotiva, 5 = lo motiva mucho)'],
+  riesgo:['¿Riesgo?','Qué tranquilo/a estás al delegarle esto (1 = muy intranquilo/a, 5 = muy tranquilo/a)'],
+  equidad:['¿Equidad?','Ayuda a equilibrar las cargas y oportunidades del equipo (1 = más desequilibrio, 5 = más equilibrio)']
 };
+const LV=[
+  ['Decir','Tú decides y les informas. Sin discusión.'],
+  ['Vender','Decides tú y te esfuerzas en convencerles de por qué.'],
+  ['Consultar','Consultas su opinión antes de decidir tú.'],
+  ['Acordar','Deciden juntos, de común acuerdo.'],
+  ['Aconsejar','Ellos deciden; tú das tu consejo e intentas influir.'],
+  ['Preguntar','Ellos deciden y después te explican sus razones.'],
+  ['Delegar','Autonomía total: ellos deciden y ejecutan sin consultarte.']
+];
+const COL=['#E91E8C','#F44336','#FF9800','#F9C513','#4CAF50','#2196F3','#9C27B0'];
+const GUIDE=[
+  n=>['Saluda y abre la conversación','¿Cómo recibes a '+n+' y le cuentas para qué se están juntando?'],
+  n=>['Plantea el desafío','¿Qué le vas a delegar? Dilo de forma simple y directa.'],
+  n=>['Explica por qué es importante','¿Qué impacto tiene en el equipo o en los resultados hacerla bien?'],
+  n=>['Dile por qué pensaste en '+n,'¿Qué fortalezas ves, o qué podrá aprender con esto?'],
+  n=>['Define qué esperas lograr','¿Qué resultado concreto, para cuándo, y cómo se verá que salió bien?'],
+  n=>['Recorre los pasos y la autonomía de cada uno','¿Cuánta autonomía tendrá '+n+' en cada paso? Mira tus pasos arriba.'],
+  n=>['Acuerda el seguimiento','¿Cuándo y cómo se van a juntar para ver cómo va?'],
+  n=>['Cierra con una pregunta','¿Cómo vas a invitar a '+n+' a contar cómo lo ve y qué necesita de ti?']
+];
 
-/* ===== STATE ===== */
-let state={tasks:[],selTaskId:null,selTask:'',persons:[],selPersonId:null,selPerson:'',micros:[],view:'table'};
-let tid=0,pid=0,mid=0;
+/* ===== UTILS / STATE ===== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+let uid=0;
+function fresh(){return {step:1,max:1,task:'',chk:{si:[],no:[],force:null},persons:[],selId:null,steps:[],script:'',cover:[]}}
+let S=fresh();
+const total=p=>SK.reduce((t,k)=>t+p.s[k],0);
+const colorFor=t=>t>=20?'var(--green)':t>=13?'var(--amber)':'var(--red)';
+const selPerson=()=>S.persons.find(p=>p.id===S.selId)||null;
+const cleanSteps=()=>S.steps.filter(s=>s.text.trim());
+const personName=()=>{const p=selPerson();return p&&p.name.trim()?p.name.trim():'la persona'};
+function setErr(id,msg){$(id).textContent=msg||''}
 
-/* ===== UTILS ===== */
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function getTotal(p){return SK.reduce((s,k)=>s+p.s[k],0)}
-
-/* ===== SECTION CONTROL ===== */
-function openSection(n){
-  const sec=document.getElementById('sec'+n);
-  sec.classList.remove('locked','pending','done');
-  sec.classList.add('active');
-  setTimeout(()=>sec.scrollIntoView({behavior:'smooth',block:'start'}),80);
+/* ===== NAVIGATION ===== */
+function show(n){
+  S.step=n;S.max=Math.max(S.max,n);
+  [1,2,3].forEach(i=>{
+    $('p'+i).classList.toggle('active',i===n);
+    const b=$('st'+i);
+    b.classList.toggle('active',i===n);
+    b.classList.toggle('done',i<n);
+    b.disabled=i>S.max;
+  });
+  if(n===2){$('ctx2').innerHTML=ctxPills()}
+  if(n===3){buildStep3()}
+  window.scrollTo(0,0);
+}
+function go(n){if(n<=S.max)show(n)}
+function ctxPills(){
+  const p=selPerson();
+  return '<span class="ctx-pill">🎯 '+esc(S.task.trim())+'</span><span class="ctx-pill">👤 '+esc(p?p.name.trim():'')+'</span>';
 }
 
-function lockSection(n){
-  const sec=document.getElementById('sec'+n);
-  sec.classList.remove('active');
-  sec.classList.add('locked','pending');
-  sec.classList.remove('done');
+/* ===== STEP 1: ¿CONVIENE DELEGARLA? ===== */
+function renderCriteria(){
+  const mk=(arr,type,cls)=>arr.map((c,j)=>`<label class="crit${cls}"><input type="checkbox" onchange="toggleC('${type}',${j})"><span>${esc(c)}</span></label>`).join('');
+  $('crit-si').innerHTML=mk(SI_C,'si','');
+  $('crit-no').innerHTML=mk(NO_C,'no',' no');
+  updCounts();
 }
-
-function doneSection(n,summary){
-  const sec=document.getElementById('sec'+n);
-  sec.classList.remove('active','locked','pending');
-  sec.classList.add('done');
-  if(summary) document.getElementById('sum'+n).textContent=summary;
+function updCounts(){
+  ['si','no'].forEach(t=>{const n=S.chk[t].length;$('cnt-'+t).textContent=n?(n+(n===1?' marcada':' marcadas')):''});
 }
-
-function editStep(n){
-  // Re-open that section, lock everything after
-  for(let i=n+1;i<=3;i++) lockSection(i);
-  openSection(n);
-  const sec=document.getElementById('sec'+n);
-  sec.classList.remove('done');
-  sec.classList.add('active');
+function renderCtx1(){
+  const t=S.task.trim();
+  $('ctx1').innerHTML=t?'<span class="ctx-pill">🎯 '+esc(t)+'</span>':'';
 }
-
-/* ===== STEP 0: TASKS ===== */
-function evalTask(t){
-  const si=t.si.length,no=t.no.length;
-  if(no>=1&&si>=2) return 'confirm';
-  if(no>=1) return 'no';
-  if(si>=2) return 'si';
-  if(si===1) return 'rev';
-  return 'none';
-}
-
-function addTask(){
-  state.tasks.push({id:++tid,text:'',si:[],no:[],confirmAnswer:null});
-  renderTaskTable();
-}
-
-function removeTask(id){
-  if(state.selTaskId===id){state.selTaskId=null;state.selTask='';}
-  state.tasks=state.tasks.filter(t=>t.id!==id);
-  renderTaskTable();
-}
-
-function toggleC(id,type,j){
-  const t=state.tasks.find(x=>x.id===id);
-  if(!t)return;
-  const arr=t[type];
-  const i=arr.indexOf(j);
+function toggleC(type,j){
+  const arr=S.chk[type],i=arr.indexOf(j);
   if(i>-1)arr.splice(i,1);else arr.push(j);
-  t.confirmAnswer=null;
-  if(state.selTaskId===id){
-    const r=evalTask(t);
-    if(r==='no'||(r==='confirm'&&t.confirmAnswer===null)){state.selTaskId=null;state.selTask='';}
+  S.chk.force=null;
+  setErr('e1','');
+  updCounts();
+  renderCheck();
+}
+function setForce(v){S.chk.force=v;setErr('e1','');renderCheck()}
+const hasNo=()=>S.chk.no.length>0;
+const isMixed=()=>S.chk.no.length>0&&S.chk.si.length>0;
+function renderCheck(){
+  const si=S.chk.si.length,no=S.chk.no.length,f=S.chk.force;let h;
+  const btn=(v,label)=>'<button class="btn btn-sm'+(f===v?' btn-primary':'')+'" onclick="setForce('+v+')">'+label+'</button>';
+  if(!si&&!no){
+    h='<div class="alert alert-gray">Marca las señales que se cumplan y verás una orientación.</div>';
+  }else if(si&&no){
+    h='<div class="alert alert-amber"><strong>Piénsalo con calma.</strong> Hay señales de que conviene que te encargues tú de esto, y hay señales de que puedes delegarlo. Tú decides. ¿Quieres delegarlo igual o evaluar otro desafío?'+
+      '<div class="decide">'+btn(true,'Delegarlo igual')+btn(false,'Evaluar otro desafío')+'</div></div>';
+  }else if(si>=2){
+    h='<div class="alert alert-green"><strong>Sugerimos delegar este desafío.</strong></div>';
+  }else if(si===1){
+    h='<div class="alert alert-gray">Hay una señal para delegar. Revisa si se cumplen otras antes de decidir.</div>';
+  }else{
+    h='<div class="alert alert-red"><strong>Sugerimos no delegar este desafío.</strong> ¿Quieres delegarlo igual?'+
+      '<div class="decide">'+btn(true,'Sí, delegarlo igual')+btn(false,'No')+'</div></div>';
   }
-  renderTaskTable();
-}
-
-function answerConfirm(id,ans){
-  const t=state.tasks.find(x=>x.id===id);
-  if(t) t.confirmAnswer=ans;
-  renderTaskTable();
-}
-
-function renderTaskTable(){
-  const tb=document.getElementById('task-tbody');
-  tb.innerHTML=state.tasks.map(t=>{
-    const r=evalTask(t);
-    let badge='';
-    if(r==='si') badge='<span class="badge badge-green">✅ Delegar</span>';
-    else if(r==='no') badge='<span class="badge badge-red">🚫 No delegar</span>';
-    else if(r==='rev') badge='<span class="badge badge-amber">🔍 Revisar</span>';
-    else if(r==='confirm'&&t.confirmAnswer===true) badge='<span class="badge badge-green">✅ Sí, delegar</span>';
-    else if(r==='confirm'&&t.confirmAnswer===false) badge='<span class="badge badge-red">🚫 No delegar</span>';
-    else if(r==='confirm') badge='<span class="badge badge-amber">⚠️ Conflicto</span>';
-    else badge='<span class="badge badge-gray">—</span>';
-
-    const confirmTr=(r==='confirm'&&t.confirmAnswer===null)?`<tr><td colspan="5" style="padding:0 12px 10px">
-      <div class="confirm-box"><p>⚠️ Esta tarea cumple criterios de sí delegar (${t.si.length}) pero también tiene condiciones de no delegar (${t.no.length}). ¿Crees que deberías delegarla igual?</p>
-      <div class="confirm-btns">
-        <button class="btn btn-sm btn-primary" onclick="answerConfirm(${t.id},true)">Sí, la delegaré igual</button>
-        <button class="btn btn-sm" onclick="answerConfirm(${t.id},false)">No, la retendré</button>
-      </div></div></td></tr>`:'';
-
-    return `<tr><td style="min-width:150px;width:170px"><textarea rows="2" style="width:100%;min-height:48px;resize:none;overflow:hidden;background:transparent;border:none;border-radius:var(--radius-sm);padding:4px 6px;font-size:13px;font-family:inherit;color:var(--text);line-height:1.5" placeholder="Describe la tarea…" oninput="updateTaskText(${t.id},this.value);autoGrow(this)">${esc(t.text)}</textarea></td>
-      <td><div class="crit-list">${SI_C.map((c,j)=>`<label class="crit-item"><input type="checkbox" ${t.si.includes(j)?'checked':''} onchange="toggleC(${t.id},'si',${j})"><span>${c}</span></label>`).join('')}</div></td>
-      <td><div class="crit-list">${NO_C.map((c,j)=>`<label class="crit-item no-c"><input type="checkbox" ${t.no.includes(j)?'checked':''} onchange="toggleC(${t.id},'no',${j})"><span>${c}</span></label>`).join('')}</div></td>
-      <td style="text-align:center;vertical-align:middle">${badge}</td>
-      <td><button class="del-btn" onclick="removeTask(${t.id})">✕</button></td>
-    </tr>${confirmTr}`;
-  }).join('');
-  renderDelegableList();
-  document.getElementById('task-select-area').style.display=state.tasks.some(t=>t.text.trim())?'block':'none';
-}
-
-function updateTaskText(id,val){
-  const t=state.tasks.find(x=>x.id===id);
-  if(t){t.text=val;renderDelegableList();}
-}
-
-function renderDelegableList(){
-  const delegable=state.tasks.filter(t=>{
-    if(!t.text.trim()) return false;
-    const r=evalTask(t);
-    return r==='si'||(r==='confirm'&&t.confirmAnswer===true);
-  });
-  // Clear selection if no longer delegable
-  if(state.selTaskId!==null&&!delegable.find(t=>t.id===state.selTaskId)){
-    state.selTaskId=null;state.selTask='';
+  if(no&&f===false){
+    h+='<div class="alert alert-blue">Te sugerimos evaluar su urgencia. Por mientras, piensa en otro desafío para evaluar.'+
+      '<div class="decide"><button class="btn btn-sm" onclick="newTask()">Empezar con otro desafío</button></div></div>';
   }
-  const el=document.getElementById('delegable-list');
-  el.innerHTML=delegable.map(t=>{
-    const isSel=state.selTaskId===t.id;
-    return `<div class="sel-row${isSel?' sel':''}" data-tid="${t.id}" onclick="selectTask(${t.id},this)">
-      <div class="sel-dot"></div>
-      <span style="flex:1">${esc(t.text)}</span>
-      <span class="badge badge-green">Delegable</span>
-    </div>`;
-  }).join('');
+  $('check-result').innerHTML=h;
 }
 
-function selectTask(id, el){
-  // Get task text from state
-  const t=state.tasks.find(x=>x.id===id);
-  if(!t) return;
-  state.selTaskId=id;
-  state.selTask=t.text;
-  // Clear custom field
-  document.getElementById('custom-task').value='';
-  // Update visual selection without re-rendering
-  document.querySelectorAll('#delegable-list .sel-row').forEach(r=>r.classList.remove('sel'));
-  el.classList.add('sel');
+/* ===== STEP 1: PERSONAS ===== */
+function addPerson(init){
+  S.persons.forEach(p=>{p.open=false});
+  const p={id:++uid,name:'',open:false,evaluated:false,s:{sabe:3,puede:3,quiere:3,riesgo:3,equidad:3}};
+  S.persons.push(p);
+  renderPersons(init===true?null:p.id);
 }
-
-function confirmStep0(){
-  const customVal=document.getElementById('custom-task').value.trim();
-  // Use radio selection first, fallback to typed text
-  const finalTask=state.selTaskId!==null?state.selTask:customVal;
-  if(!finalTask){
-    alert('Selecciona una tarea delegable de la lista, o escribe una tarea de ejemplo en el campo inferior.');
-    return;
-  }
-  state.selTask=finalTask;
-  doneSection(0,'Tarea: '+finalTask.substring(0,40)+(finalTask.length>40?'…':''));
-  // Init step 1
-  document.getElementById('s1-pills').innerHTML=`<span class="ctx-pill">🎯 ${esc(state.selTask)}</span>`;
-  if(state.persons.length===0) addPerson();
-  renderPersonTable();
-  renderSliders();
-  openSection(1);
-}
-
-/* ===== STEP 1: PERSONS ===== */
-function addPerson(){
-  state.persons.push({id:++pid,name:'',s:{sabe:3,puede:3,quiere:3,riesgo:3,equidad:3}});
-  renderPersonTable();
-  renderSliders();
-}
-
 function removePerson(id){
-  if(state.selPersonId===id){state.selPersonId=null;state.selPerson='';}
-  state.persons=state.persons.filter(p=>p.id!==id);
-  renderPersonTable();renderSliders();renderPersonSelect();
+  S.persons=S.persons.filter(p=>p.id!==id);
+  if(S.selId===id)S.selId=null;
+  if(!S.persons.length){addPerson(true);return}
+  renderPersons();
 }
-
-function setScore(pid2,key,val){
-  const p=state.persons.find(x=>x.id===pid2);
-  if(p){p.s[key]=val;renderPersonTable();renderSliders();renderPersonSelect();renderPersonWarnings();}
+function toggleOpen(id){
+  const p=S.persons.find(x=>x.id===id);if(!p)return;
+  const was=p.open;
+  S.persons.forEach(q=>{q.open=false});
+  p.open=!was;
+  if(p.open)p.evaluated=true;
+  renderPersons();
 }
-
-function updatePName(id,val){
-  const p=state.persons.find(x=>x.id===id);
-  if(p){p.name=val;renderPersonSelect();}
-}
-
-function renderPersonTable(){
-  const tb=document.getElementById('person-tbody');
-  tb.innerHTML=state.persons.map(p=>{
-    const total=getTotal(p);
-    const col=total>=20?'var(--green)':total>=13?'var(--amber)':'var(--red)';
-    return `<tr>
-      <td style="min-width:100px"><textarea rows="1" style="width:100%;min-width:90px;resize:none;overflow:hidden;background:transparent;border:none;padding:4px 6px;font-size:12px;font-weight:500;font-family:inherit;color:var(--text);line-height:1.4" placeholder="Nombre…" oninput="updatePName(${p.id},this.value);autoGrow(this)">${esc(p.name)}</textarea></td>
-      ${SK.map(k=>`<td><div class="score-pills">${[1,2,3,4,5].map(v=>`<span class="sp${p.s[k]===v?' sel':''}" onclick="setScore(${p.id},'${k}',${v})">${v}</span>`).join('')}</div></td>`).join('')}
-      <td><span style="font-size:14px;font-weight:600;color:${col}">${total}/25</span></td>
-      <td><button class="del-btn" onclick="removePerson(${p.id})">✕</button></td>
-    </tr>`;
-  }).join('');
-  renderPersonWarnings();
-  renderPersonSelect();
-}
-
-function renderSliders(){
-  const el=document.getElementById('slider-cards');
-  el.innerHTML=state.persons.map(p=>{
-    const total=getTotal(p);
-    const col=total>=20?'var(--green)':total>=13?'var(--amber)':'var(--red)';
-    return `<div class="slider-card">
-      <div class="slider-head">
-        <textarea rows="1" placeholder="Nombre…" oninput="updatePName(${p.id},this.value);autoGrow(this)" style="border:none;background:transparent;font-size:14px;font-weight:600;padding:0;width:55%;resize:none;overflow:hidden;font-family:inherit;color:var(--text);line-height:1.4">${esc(p.name)}</textarea>
-        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:13px;font-weight:600;color:${col}">${total}/25</span><button class="del-btn" onclick="removePerson(${p.id})">✕</button></div>
-      </div>
-      ${SK.map(k=>`<div class="slider-row">
-        <div class="slider-top">
-          <span class="slbl">${SK_LBL[k].t}<small>${SK_LBL[k].d}</small></span>
-          <span class="sval" id="sv-${p.id}-${k}">${p.s[k]}/5</span>
-        </div>
-        <input type="range" min="1" max="5" step="1" value="${p.s[k]}" oninput="setScore(${p.id},'${k}',+this.value);document.getElementById('sv-${p.id}-${k}').textContent=this.value+'/5'">
-      </div>`).join('')}
-    </div>`;
-  }).join('');
-}
-
-function renderPersonWarnings(){
-  const valid=state.persons.filter(p=>p.name.trim());
-  let h='';
-  valid.forEach(p=>{
-    if(p.s.riesgo<=2) h+=`<div class="alert alert-amber"><span>⚠️</span><span><strong>${esc(p.name)}</strong>: riesgo bajo. Considera acompañamiento cercano o hitos frecuentes.</span></div>`;
-    if(p.s.puede<=2) h+=`<div class="alert alert-amber"><span>⚠️</span><span><strong>${esc(p.name)}</strong>: poco tiempo disponible. Puede afectar la ejecución.</span></div>`;
-    if(p.s.sabe<=2&&p.s.quiere<=2) h+=`<div class="alert alert-red"><span>🚫</span><span><strong>${esc(p.name)}</strong>: bajo conocimiento y motivación. Esta delegación requiere mucho apoyo.</span></div>`;
-    if(p.s.sabe<=2&&p.s.quiere>=4) h+=`<div class="alert alert-blue"><span>💡</span><span><strong>${esc(p.name)}</strong>: baja experiencia pero alta motivación. Define hitos claros y acompáñale.</span></div>`;
-  });
-  document.getElementById('person-warnings').innerHTML=h;
-}
-
-function renderPersonSelect(){
-  const valid=state.persons.filter(p=>p.name.trim()).sort((a,b)=>getTotal(b)-getTotal(a));
-  if(state.selPersonId!==null&&!valid.find(p=>p.id===state.selPersonId)){state.selPersonId=null;state.selPerson='';}
-  const el=document.getElementById('person-list');
-  el.innerHTML=valid.map((p,i)=>{
-    const total=getTotal(p);
-    const pct=Math.round(total/25*100);
-    const col=total>=20?'var(--green)':total>=13?'var(--amber)':'var(--red)';
-    const isSel=state.selPersonId===p.id;
-    return `<div class="sel-row${isSel?' sel':''}" onclick="selectPerson(${p.id},this)">
-      <div class="sel-dot"></div>
-      <span style="flex:1">${i===0?'⭐ ':''}<strong>${esc(p.name)}</strong></span>
-      <span style="font-weight:600;color:${col}">${total}/25 (${pct}%)</span>
-    </div>`;
-  }).join('');
-  document.getElementById('person-select-area').style.display=valid.length>0?'block':'none';
-}
-
-function selectPerson(id, el){
-  const p=state.persons.find(x=>x.id===id);
-  if(!p) return;
-  state.selPersonId=id;
-  state.selPerson=p.name;
-  document.querySelectorAll('#person-list .sel-row').forEach(r=>r.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-function setView(v){
-  state.view=v;
-  document.getElementById('view-table').style.display=v==='table'?'block':'none';
-  document.getElementById('view-slider').style.display=v==='slider'?'block':'none';
-  document.getElementById('vt-table').classList.toggle('active',v==='table');
-  document.getElementById('vt-slider').classList.toggle('active',v==='slider');
-}
-
-function confirmStep1(){
-  if(!state.selPersonId){
-    const valid=state.persons.filter(p=>p.name.trim());
-    if(valid.length===0){alert('Agrega al menos una persona con nombre.');return;}
-    // auto-select top
-    selectPerson(valid[0].id,null);
-  }
-  if(!state.selPerson){alert('Selecciona la persona a quien delegarás.');return;}
-  doneSection(1,state.selPerson+' ('+getTotal(state.persons.find(p=>p.id===state.selPersonId))+'/25)');
-  // Init step 2
-  document.getElementById('s2-pills').innerHTML=`<span class="ctx-pill">🎯 ${esc(state.selTask)}</span><span class="ctx-pill">👤 ${esc(state.selPerson)}</span>`;
-  if(state.micros.length===0) addMicro();
-  renderMicros();
-  openSection(2);
-}
-
-/* ===== STEP 2: MICROTASKS ===== */
-function addMicro(){
-  state.micros.push({id:++mid,text:'',level:3});
-  renderMicros();
-}
-
-function removeMicro(id){
-  state.micros=state.micros.filter(m=>m.id!==id);
-  renderMicros();
-}
-
-function moveMicro(id,dir){
-  const i=state.micros.findIndex(m=>m.id===id);
-  if(dir===-1&&i===0) return;
-  if(dir===1&&i===state.micros.length-1) return;
-  [state.micros[i],state.micros[i+dir]]=[state.micros[i+dir],state.micros[i]];
-  renderMicros();
-}
-
-function updateMicro(id,key,val){
-  const m=state.micros.find(x=>x.id===id);
-  if(m) m[key]=key==='level'?+val:val;
-}
-
-function renderMicros(){
-  const n=state.micros.length;
-  document.getElementById('micro-tbody').innerHTML=state.micros.map((m,i)=>`<tr>
-    <td style="text-align:center;vertical-align:middle">
-      <div class="move-btns">
-        <button class="move-btn" onclick="moveMicro(${m.id},-1)" ${i===0?'disabled':''}>▲</button>
-        <button class="move-btn" onclick="moveMicro(${m.id},1)" ${i===n-1?'disabled':''}>▼</button>
-      </div>
-    </td>
-    <td><input type="text" value="${esc(m.text)}" placeholder="Ej: Enviar mail de convocatoria…" oninput="updateMicro(${m.id},'text',this.value)"></td>
-    <td><select onchange="updateMicro(${m.id},'level',this.value)">
-      ${[1,2,3,4,5,6,7].map(lv=>`<option value="${lv}"${m.level===lv?' selected':''}>${lv} — ${PK_NAME[lv-1]}</option>`).join('')}
-    </select></td>
-    <td><button class="del-btn" onclick="removeMicro(${m.id})">✕</button></td>
-  </tr>`).join('');
-}
-
-function selectPoker(n,el){
-  document.querySelectorAll('.pk').forEach(c=>c.classList.remove('sel'));
-  el.classList.add('sel');
-  const d=document.getElementById('poker-desc');
-  d.style.display='block';
-  d.style.background=PK_COL[n-1]+'22';
-  d.style.border='1px solid '+PK_COL[n-1]+'55';
-  d.style.color=PK_COL[n-1];
-  d.innerHTML=`<strong>Nivel ${n} — ${PK_NAME[n-1]}:</strong> ${PK_DESC[n-1]}`;
-}
-
-async function suggestMicros(){
-  const el=document.getElementById('micro-sugg');
-  el.innerHTML='<div class="alert alert-blue"><span class="spinner"></span><span>Consultando sugerencias de microtareas…</span></div>';
-  try {
-    const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      model:'claude-sonnet-4-6',max_tokens:500,
-      messages:[{role:'user',content:`La tarea a delegar es: "${state.selTask}". Sugiere 5-6 microtareas muy concretas y específicas (como "enviar mail de convocatoria", "reservar sala", "preparar agenda"). Responde SOLO con un array JSON de strings, sin texto adicional ni backticks.`}]
-    })});
-    const d=await r.json();
-    if(!r.ok||d.error){throw new Error(d.error||'Error '+r.status);}
-    const txt=d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
-    const list=JSON.parse(txt.replace(/```json|```/g,'').trim());
-    window._microSuggestions = list;
-    el.innerHTML=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
-      <p style="font-size:11px;font-weight:600;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px">Sugerencias — clic para agregar</p>
-      <div style="display:flex;flex-wrap:wrap;gap:6px">${list.map((s,i)=>`<button onclick="addMicroIdx(${i},this)" class="btn btn-sm">${esc(s)}</button>`).join('')}</div></div>`;
-  } catch(err){
-    el.innerHTML=`<div class="alert alert-red"><span>❌</span><span><strong>Error:</strong> ${err.message}. <a href="/api/test" target="_blank" style="color:var(--red);text-decoration:underline">Verificar configuración →</a></span></div>`;
+function nameKey(e,id){
+  if(e.key==='Enter'){
+    e.preventDefault();
+    const p=S.persons.find(x=>x.id===id);
+    if(p&&!p.open)toggleOpen(id);
   }
 }
-
-function addMicroText(text,btn){
-  state.micros.push({id:++mid,text,level:3});
-  renderMicros();
-  btn.style.opacity='0.4';btn.disabled=true;
-}
-
-function addMicroIdx(i,btn){
-  const text=(window._microSuggestions||[])[i]||'';
-  if(!text) return;
-  state.micros.push({id:++mid,text,level:3});
-  renderMicros();
-  btn.style.opacity='0.4';btn.disabled=true;
-}
-
-function confirmStep2(){
-  const filled=state.micros.filter(m=>m.text.trim());
-  if(filled.length===0){alert('Agrega al menos una microtarea.');return;}
-  doneSection(2,filled.length+' microtarea'+(filled.length>1?'s':''));
-  // Init step 3
-  document.getElementById('s3-pills').innerHTML=`<span class="ctx-pill">🎯 ${esc(state.selTask)}</span><span class="ctx-pill">👤 ${esc(state.selPerson)}</span>`;
-  renderGuionFields();
-  openSection(3);
-}
-
-/* ===== STEP 3: CÓMO DELEGAR ===== */
-function renderGuionFields(){
-  const microsText = state.micros.filter(m=>m.text.trim()).map(m=>`• ${m.text} → Nivel ${m.level}: ${PK_NAME[m.level-1]}`).join('\n');
-  // Only show fields that need to be filled (gf1, gf2, gf5 are auto)
-  const fields = [
-    {id:'gf3', icon:'⭐', label:'Por qué es importante esta tarea',
-     ph:'¿Qué impacto tiene en el proyecto, equipo o resultados? ¿Por qué importa hacerla bien?'},
-    {id:'gf4', icon:'💪', label:'Por qué creo que puede hacerlo bien',
-     ph:'Fortalezas específicas de esta persona o los desafíos que tendrá que superar…'},
-    {id:'gf5', icon:'📋', label:'Puntos importantes y plazos',
-     ph:'Fechas clave, condiciones, restricciones o contexto que debe conocer…', preVal: microsText},
-    {id:'gf6', icon:'🏁', label:'Objetivo a conseguir (idealmente SMART) e hitos de seguimiento',
-     ph:'Específico, medible, alcanzable, relevante y con plazo. Ej: "Tener el informe listo el viernes 15 con al menos 3 alternativas comparadas". ¿Cuándo harán seguimiento?'},
-  ];
-  document.getElementById('guion-fields').innerHTML = `
-    <div class="alert alert-blue" style="margin-bottom:16px">
-      <span>💡</span>
-      <span>Los datos de la tarea y la persona ya están guardados. Completa solo lo que falta para cerrar bien la delegación.</span>
-    </div>
-    ${fields.map(f=>`
-    <div class="gf-field">
-      <div class="gf-label"><div class="gf-icon">${f.icon}</div><span>${f.label}</span>${f.preVal?'<span class="auto-tag">Pre-completado</span>':''}</div>
-      <textarea id="${f.id}" rows="${f.id==='gf5'?3:2}" placeholder="${f.ph}">${esc(f.preVal||'')}</textarea>
-    </div>`).join('')}`;
-}
-
-function getGuionVals(){
-  const vals = {
-    gf1: state.selTask,
-    gf2: state.selPerson,
-    gf3: (document.getElementById('gf3')||{value:''}).value.trim(),
-    gf4: (document.getElementById('gf4')||{value:''}).value.trim(),
-    gf5: (document.getElementById('gf5')||{value:''}).value.trim(),
-    gf6: (document.getElementById('gf6')||{value:''}).value.trim(),
-  };
-  return vals;
-}
-
-function getDelegableOtras(){
-  // Tasks marked as delegable that are NOT the current selTask
-  return state.tasks.filter(t => {
-    if(!t.text.trim() || t.text === state.selTask) return false;
-    const r = evalTask(t);
-    return r==='si' || (r==='confirm' && t.confirmAnswer===true);
-  });
-}
-
-async function generateResumen(){
-  const vals = getGuionVals();
-  const warns = [];
-  if(!vals.gf3||vals.gf3.length<10) warns.push('Agrega por qué es importante esta tarea para motivar a tu colaborador/a.');
-  if(!vals.gf4||vals.gf4.length<10) warns.push('Menciona fortalezas o desafíos concretos de '+state.selPerson+'.');
-  if(!vals.gf6||vals.gf6.length<10) warns.push('Define el objetivo a conseguir e incluye al menos un hito de seguimiento.');
-
-  if(warns.length>0){
-    const warnHtml = warns.map(w=>`<div class="alert alert-amber" style="margin-bottom:6px"><span>⚠️</span><span>${w}</span></div>`).join('');
-    document.getElementById('output-area').innerHTML = warnHtml + '<p style="font-size:12px;color:var(--text-sec);margin-top:8px">Completa los campos anteriores y vuelve a intentarlo.</p>';
-    return;
-  }
-
-  const out = document.getElementById('output-area');
-  out.innerHTML = '<div class="alert alert-blue"><span class="spinner"></span><span>Generando resumen y tips…</span></div>';
-
-  try {
-    const r = await fetch('/api/claude', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
-      model:'claude-sonnet-4-6', max_tokens:1000,
-      messages:[{role:'user', content:`Eres un coach experto en liderazgo y delegación. 
-Con los siguientes datos, genera:
-1. Un resumen estructurado en punteo de la delegación.
-2. Exactamente 5 tips concretos para hacer bien la conversación de delegación (basados en el contexto específico, no genéricos).
-
-Datos de la delegación:
-- Tarea: ${vals.gf1}
-- Persona: ${vals.gf2}
-- Por qué es importante: ${vals.gf3}
-- Por qué puede hacerlo bien: ${vals.gf4}
-- Microtareas y niveles de autonomía: ${vals.gf5}
-- Objetivo e hitos: ${vals.gf6}
-
-Responde SOLO en JSON con esta estructura exacta, sin backticks ni texto adicional:
-{
-  "resumen": {
-    "tarea": "...",
-    "persona": "...",
-    "importancia": "...",
-    "fortalezas": "...",
-    "microtareas": ["..."],
-    "objetivo": "..."
-  },
-  "tips": ["tip 1","tip 2","tip 3","tip 4","tip 5"]
-}`}]
-    })});
-    const d = await r.json();
-    if(!r.ok||d.error){throw new Error(d.error||'Error '+r.status);}
-    const raw = d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
-    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    renderOutput(parsed, vals);
-    doneSection(3, 'Resumen generado');
-  } catch(err){
-    out.innerHTML = `<div class="alert alert-red"><span>❌</span><span><strong>Error:</strong> ${err.message} — <a href="/api/test" target="_blank" style="color:var(--red);text-decoration:underline">Verificar API key →</a></span></div>`;
-  }
-}
-
-function renderOutput(parsed, vals){
-  const otras = getDelegableOtras();
-  const res = parsed.resumen;
-  const tips = parsed.tips || [];
-
-  // Build microtareas list
-  const microsHtml = Array.isArray(res.microtareas)
-    ? res.microtareas.map(m=>`<li style="margin-bottom:5px">${esc(m)}</li>`).join('')
-    : `<li>${esc(res.microtareas)}</li>`;
-
-  // Tips (5 from IA + fixed Ariztia tip)
-  const allTips = [...tips,
-    'Recuerda guiarte por el sello Ariztía: lidera con puertas abiertas, confía y acompáña, enseña para poder exigir. Que esta delegación sea un acto de desarrollo, no solo de distribución de carga.'
-  ];
-  const tipsHtml = allTips.map((t,i)=>`
-    <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">
-      <span style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:${i===5?'var(--amber)':'var(--accent)'};color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">${i+1}</span>
-      <span style="font-size:13px;line-height:1.6;color:${i===5?'var(--amber)':'var(--text)'}">${i===5?'<strong>Sello Ariztía:</strong> ':''} ${esc(t)}</span>
-    </div>`).join('');
-
-  const outputHtml = `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px">
-      <div style="background:var(--accent);padding:14px 20px;display:flex;align-items:center;gap:10px">
-        <span style="font-size:20px">📋</span>
-        <div><div style="font-size:15px;font-weight:600;color:#fff">Resumen de tu delegación</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.8)">Úsalo como referencia para preparar tu conversación</div></div>
-      </div>
-      <div style="padding:20px">
-        <div style="display:grid;gap:14px">
-          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
-            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">🎯 Tarea a delegar</div>
-            <div style="font-size:13px">${esc(res.tarea||vals.gf1)}</div>
-          </div>
-          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
-            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">👤 Persona elegida</div>
-            <div style="font-size:13px">${esc(res.persona||vals.gf2)}</div>
-          </div>
-          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
-            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">⭐ Por qué es importante</div>
-            <div style="font-size:13px">${esc(res.importancia||vals.gf3)}</div>
-          </div>
-          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
-            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">💪 Por qué puede hacerlo bien</div>
-            <div style="font-size:13px">${esc(res.fortalezas||vals.gf4)}</div>
-          </div>
-          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
-            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">📌 Microtareas y niveles de autonomía</div>
-            <ul style="font-size:13px;padding-left:16px;margin:0">${microsHtml}</ul>
-          </div>
-          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px">
-            <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">🏁 Objetivo e hitos de seguimiento</div>
-            <div style="font-size:13px">${esc(res.objetivo||vals.gf6)}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px">
-      <div style="background:#1A1916;padding:14px 20px;display:flex;align-items:center;gap:10px">
-        <span style="font-size:20px">💡</span>
-        <div><div style="font-size:15px;font-weight:600;color:#fff">6 tips para hacer bien la conversación</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.7)">El 6° es siempre el sello que nos identifica</div></div>
-      </div>
-      <div style="padding:20px">${tipsHtml}</div>
-    </div>
-
-    <div style="border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;background:var(--surface)">
-      <p style="font-size:13px;font-weight:600;margin-bottom:14px">¿Qué quieres hacer ahora?</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="openGuionModal()" style="font-size:13px">✍️ Preparar mi guión</button>
-        ${otras.length>0?`<button class="btn" onclick="elegirOtraDelgacion()" style="font-size:13px">🔁 Analizar otra tarea delegable</button>`:''}
-        <button class="btn btn-exit" onclick="openExitModal()" style="font-size:13px">✕ Salir</button>
-      </div>
-    </div>`;
-
-  document.getElementById('output-area').innerHTML = outputHtml;
-  document.getElementById('output-area').scrollIntoView({behavior:'smooth', block:'start'});
-}
-
-/* ===== GUIÓN PROPIO ===== */
-function openGuionModal(){
-  document.getElementById('guion-modal').style.display='flex';
-  document.getElementById('feedback-output').innerHTML='';
-  renderGuionModalBtns('initial');
-  document.getElementById('guion-propio').focus();
-}
-
-function closeGuionModal(){
-  document.getElementById('guion-modal').style.display='none';
-}
-
-function renderGuionModalBtns(mode){
-  const otras = getDelegableOtras();
-  const otraBtn = otras.length>0 ? `<button class="btn btn-sm" onclick="closeGuionModal();elegirOtraDelgacion()">🔁 Analizar otra tarea</button>` : '';
-  if(mode==='initial'){
-    document.getElementById('guion-modal-btns').innerHTML = `
-      <button class="btn btn-exit btn-sm" onclick="closeGuionModal()">✕ Cerrar</button>
-      ${otraBtn}
-      <button class="btn btn-sm" onclick="copyGuionPropio()">📋 Copiar guión</button>
-      <button class="btn btn-primary btn-sm" onclick="pedirFeedback()">💬 Pedir feedback</button>`;
-  } else if(mode==='post-feedback'){
-    document.getElementById('guion-modal-btns').innerHTML = `
-      <button class="btn btn-exit btn-sm" onclick="closeGuionModal()">✕ Cerrar</button>
-      ${otraBtn}
-      <button class="btn btn-sm" onclick="editarGuion()">✏️ Editar mi guión</button>
-      <button class="btn btn-sm" onclick="copyGuionPropio()">📋 Copiar guión</button>`;
-  }
-}
-
-function editarGuion(){
-  document.getElementById('feedback-output').innerHTML='';
-  document.getElementById('guion-propio').focus();
-  renderGuionModalBtns('initial');
-}
-
-async function pedirFeedback(){
-  const guion = document.getElementById('guion-propio').value.trim();
-  if(!guion || guion.length < 30){
-    alert('Escribe tu guión primero (al menos unas pocas frases).');
-    return;
-  }
-  const feedEl = document.getElementById('feedback-output');
-  feedEl.innerHTML = '<div class="alert alert-blue"><span class="spinner"></span><span>Analizando tu guión…</span></div>';
-
-  try {
-    const r = await fetch('/api/claude', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
-      model:'claude-sonnet-4-6', max_tokens:700,
-      messages:[{role:'user', content:`Eres un coach experto en liderazgo y delegación. Analiza este guión de conversación de delegación y da feedback útil y constructivo.
-
-Contexto:
-- Tarea a delegar: ${state.selTask}
-- Persona: ${state.selPerson}
-
-Guión escrito por el líder:
-"""
-${guion}
-"""
-
-Criterios a evaluar:
-1. Claridad del propósito y la importancia de la tarea
-2. Valoración de la persona (por qué la eligió)
-3. Claridad de las expectativas, autonomía y seguimiento
-4. Tono: cercano, confiado y motivador
-5. Coherencia con un liderazgo de puertas abiertas que confía, acompaña y enseña
-
-Reglas para tu feedback:
-- Si el guión está bien en general, dilo claramente y da 2-3 tips de mejora menores.
-- Si tiene problemas importantes, señálalos con claridad y directamente, sin rodeos, pero con respeto.
-- NO le digas qué escribir. Sí puedes señalar qué frase o parte no suena bien, es ambigua o poco clara.
-- Sé concreto, breve y útil. Máximo 200 palabras.
-- Termina siempre con una frase motivadora breve.
-
-Responde en texto directo, sin títulos ni bullets excesivos.`}]
-    })});
-    const d = await r.json();
-    if(!r.ok||d.error){throw new Error(d.error||'Error '+r.status);}
-    const txt = d.content.filter(c=>c.type==='text').map(c=>c.text).join('');
-    feedEl.innerHTML = `
-      <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:14px 16px;margin-top:4px">
-        <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">💬 Feedback de tu coach</div>
-        <div style="font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap">${esc(txt)}</div>
+function pickLabel(sel){return sel?'✓ Persona elegida (deshacer)':'Elegir esta persona'}
+function renderPersons(focusId){
+  $('persons').innerHTML=S.persons.map((p,i)=>{
+    const t=total(p),sel=p.id===S.selId;
+    const star=`<span class="star" id="star-${p.id}" hidden>⭐ Mayor puntaje</span>`;
+    const tot=`<span class="total" id="tot-${p.id}" style="color:${colorFor(t)}">${t}/25</span>`;
+    const pick=`<button type="button" class="btn btn-sm" id="ch-${p.id}" onclick="choose(${p.id})">${pickLabel(sel)}</button>`;
+    const evalLabel=p.open?'Ocultar evaluación ▴':(p.evaluated?'Editar evaluación ▾':'Evaluar ▾');
+    const head=`<div class="phead">
+        <input type="text" id="pn-${p.id}" value="${esc(p.name)}" placeholder="Nombre de la persona" aria-label="Nombre de la persona ${i+1}" oninput="setName(${p.id},this.value)" onkeydown="nameKey(event,${p.id})">
+        ${p.open?star+tot:''}
+        <button type="button" class="btn btn-sm" onclick="toggleOpen(${p.id})" aria-expanded="${p.open}">${evalLabel}</button>
+        <button class="del-btn" onclick="removePerson(${p.id})" aria-label="Quitar persona">✕</button>
       </div>`;
-    renderGuionModalBtns('post-feedback');
-  } catch(err){
-    feedEl.innerHTML = `<div class="alert alert-red"><span>❌</span><span>${err.message}</span></div>`;
+    let body='';
+    if(p.open){
+      body=SK.map(k=>`<div class="srow">
+        <div class="lb"><b>${SKL[k][0]}</b><small>${SKL[k][1]}</small></div>
+        <div class="pills" role="group" aria-label="${SKL[k][0]}">${[1,2,3,4,5].map(v=>`<button type="button" class="pill${p.s[k]===v?' on':''}" data-k="${k}" data-v="${v}" aria-pressed="${p.s[k]===v}" onclick="setScore(${p.id},'${k}',${v})">${v}</button>`).join('')}</div>
+      </div>`).join('')+`<div class="pfoot">${pick}</div>`;
+    }else if(p.evaluated){
+      body=`<div class="psum">
+        <span class="chips">${SK.map(k=>'<span>'+SKL[k][0].replace(/[¿?]/g,'')+' <b>'+p.s[k]+'</b></span>').join('')}</span>
+        ${star}${tot}${pick}
+      </div>`;
+    }
+    return `<div class="pcard${sel?' sel':''}" id="pc-${p.id}">${head}${body}</div>`;
+  }).join('');
+  refreshStar();renderWarnings();
+  if(focusId){const el=$('pn-'+focusId);if(el)el.focus()}
+}
+function setName(id,v){const p=S.persons.find(x=>x.id===id);if(p){p.name=v;renderWarnings()}}
+function setScore(id,k,v){
+  const p=S.persons.find(x=>x.id===id);if(!p)return;
+  p.s[k]=v;p.evaluated=true;
+  document.querySelectorAll('#pc-'+id+' .pill[data-k="'+k+'"]').forEach(b=>{
+    const on=+b.dataset.v===v;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);
+  });
+  const t=total(p),el=$('tot-'+id);
+  if(el){el.textContent=t+'/25';el.style.color=colorFor(t)}
+  refreshStar();renderWarnings();
+}
+function setSel(id){
+  S.selId=id;
+  S.persons.forEach(p=>{
+    const c=$('pc-'+p.id);if(c)c.classList.toggle('sel',p.id===id);
+    const b=$('ch-'+p.id);if(b)b.textContent=pickLabel(p.id===id);
+  });
+  renderWarnings();
+}
+function choose(id){setSel(S.selId===id?null:id)}
+function refreshStar(){
+  const ev=S.persons.filter(p=>p.evaluated);
+  let top=null;
+  ev.forEach(p=>{if(!top||total(p)>total(top))top=p});
+  S.persons.forEach(p=>{const el=$('star-'+p.id);if(el)el.hidden=!(ev.length>1&&top&&p.id===top.id)});
+}
+function renderWarnings(){
+  const p=selPerson();let h='';
+  if(p){
+    const n=esc(p.name.trim()||'Esta persona'),s=p.s;
+    if(s.riesgo<=2)h+=`<div class="alert alert-amber"><strong>${n}:</strong> te deja intranquilo/a. Considera un acompañamiento cercano o hitos frecuentes.</div>`;
+    if(s.puede<=2)h+=`<div class="alert alert-amber"><strong>${n}:</strong> tiene poco tiempo disponible. Puede afectar la ejecución.</div>`;
+    if(s.sabe<=2&&s.quiere<=2)h+=`<div class="alert alert-red"><strong>${n}:</strong> tiene poco conocimiento y poca motivación. Esta delegación requiere mucho apoyo.</div>`;
+    if(s.sabe<=2&&s.quiere>=4)h+=`<div class="alert alert-blue"><strong>${n}:</strong> tiene poca experiencia pero mucha motivación. Define hitos claros y acompáñale.</div>`;
   }
+  $('p-warn').innerHTML=h;
 }
-
-function copyGuionPropio(){
-  const ta = document.getElementById('guion-propio');
-  if(!ta||!ta.value.trim()){alert('Escribe tu guión primero.');return;}
-  navigator.clipboard.writeText(ta.value).then(()=>alert('Guión copiado al portapapeles ✓'));
-}
-
-/* ===== OTRA DELEGACIÓN ===== */
-/* Open the "nueva delegación" modal */
-function elegirOtraDelgacion(){
-  const otras = getDelegableOtras();
-  if(otras.length===0){alert('No hay otras tareas delegables. Puedes agregar más en el paso 1.');return;}
-  // Check if there's a written script to warn about
-  const guion = (document.getElementById('guion-propio')||{value:''}).value.trim();
-  const copyBtn = document.getElementById('nueva-copy-btn');
-  if(copyBtn) copyBtn.style.display = guion ? 'flex' : 'none';
-  document.getElementById('nueva-modal').style.display='flex';
-}
-
-function closeNuevaModal(){
-  document.getElementById('nueva-modal').style.display='none';
-}
-
-function copyAndContinue(){
-  const ta = document.getElementById('guion-propio');
-  if(ta && ta.value.trim()){
-    navigator.clipboard.writeText(ta.value).then(()=>{
-      doNuevaDelegacion();
-    }).catch(()=>{
-      // If clipboard fails, still continue
-      doNuevaDelegacion();
-    });
-  } else {
-    doNuevaDelegacion();
+function goStep2(){
+  if(!S.task.trim())return setErr('e1','Escribe qué quieres delegar.');
+  if(hasNo()){
+    if(S.chk.force===null)return setErr('e1',isMixed()?'Elige si lo delegarás igual o si evaluarás otro desafío.':'Responde si quieres delegarlo igual.');
+    if(S.chk.force===false)return setErr('e1','Por ahora no se delegará este desafío. Escribe otro para evaluar.');
   }
-}
-
-function doNuevaDelegacion(){
-  closeNuevaModal();
-  closeGuionModal();
-
-  // Keep tasks (step 0), reset everything else
-  state.selTaskId = null;
-  state.selTask = '';
-  state.selPersonId = null;
-  state.selPerson = '';
-  state.persons = [];
-  state.micros = [];
-  pid = 0; mid = 0;
-
-  // Reset sections 1, 2, 3 visually
-  for(let i=1;i<=3;i++) lockSection(i);
-  ['sum1','sum2','sum3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
-  document.getElementById('output-area').innerHTML='';
-  document.getElementById('micro-sugg').innerHTML='';
-  document.getElementById('person-warnings').innerHTML='';
-
-  // Reopen section 0 — DONE but re-editable
-  // Show a clear "nuevo análisis" banner on section 0
-  const sec0 = document.getElementById('sec0');
-  sec0.classList.remove('locked','pending','done');
-  sec0.classList.add('active');
-
-  // Show the task selection area so they can pick the next task
-  // Re-render delegable list so they can select a different one
-  renderTaskTable();
-  renderDelegableList();
-  document.getElementById('task-select-area').style.display = 'block';
-
-  // Add a banner to make it clear this is a new analysis
-  const tbody = document.getElementById('task-tbody');
-  if(tbody){
-    const banner = document.createElement('div');
-    banner.id = 'nuevo-analisis-banner';
-    banner.style.cssText = 'background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px';
-    banner.innerHTML = '<span>🔁</span><span><strong>Nuevo análisis</strong> — Tus tareas del análisis anterior están conservadas. Selecciona otra tarea delegable o agrega nuevas.</span>';
-    sec0.querySelector('.section-body').insertBefore(banner, sec0.querySelector('.section-body').firstChild);
+  const named=S.persons.filter(p=>p.name.trim());
+  if(!named.length)return setErr('e1','Agrega al menos una persona y escribe su nombre.');
+  const evald=named.filter(p=>p.evaluated);
+  if(!evald.length)return setErr('e1','Evalúa al menos a una persona: usa el botón "Evaluar".');
+  const cur=selPerson();
+  if(!cur||!cur.name.trim()||!cur.evaluated){
+    setSel(evald.reduce((a,b)=>total(b)>total(a)?b:a).id);
   }
-
-  // Update section title to reflect new analysis
-  document.querySelector('#sec0 .section-subtitle').textContent = 'Nuevo análisis — selecciona otra tarea delegable o agrega más';
-
-  sec0.scrollIntoView({behavior:'smooth', block:'start'});
+  setErr('e1','');
+  show(2);
 }
 
-function resetAll(){
-  state={tasks:[],selTaskId:null,selTask:'',persons:[],selPersonId:null,selPerson:'',micros:[],view:'table'};
-  tid=0;pid=0;mid=0;
-  for(let i=1;i<=3;i++) lockSection(i);
-  const sec0=document.getElementById('sec0');
-  sec0.classList.remove('done','locked','pending');
-  sec0.classList.add('active');
-  ['sum0','sum1','sum2','sum3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
-  document.getElementById('output-area').innerHTML='';
-  document.getElementById('micro-sugg').innerHTML='';
-  document.getElementById('person-warnings').innerHTML='';
-  document.getElementById('task-tbody').innerHTML='';
-  // Clean up nuevo-analisis banner and subtitle if present
-  const banner=document.getElementById('nuevo-analisis-banner');
-  if(banner) banner.remove();
-  const sub0=document.querySelector('#sec0 .section-subtitle');
-  if(sub0) sub0.textContent='Ingresa tus tareas y marca los criterios';
-  document.getElementById('task-select-area').style.display='none';
-  addTask();
-  window.scrollTo({top:0,behavior:'smooth'});
+/* ===== STEP 2: PASOS ===== */
+function addStep(after){
+  const n={id:++uid,text:'',level:3};
+  if(after==null)S.steps.push(n);
+  else{const i=S.steps.findIndex(s=>s.id===after);S.steps.splice(i+1,0,n)}
+  renderSteps(n.id);
+}
+function removeStep(id){
+  S.steps=S.steps.filter(s=>s.id!==id);
+  if(!S.steps.length){addStep();return}
+  renderSteps();
+}
+function moveStep(id,d){
+  const i=S.steps.findIndex(s=>s.id===id),j=i+d;
+  if(j<0||j>=S.steps.length)return;
+  [S.steps[i],S.steps[j]]=[S.steps[j],S.steps[i]];
+  renderSteps();
+}
+function setStepText(id,v){const s=S.steps.find(x=>x.id===id);if(s)s.text=v}
+function setLevel(id,v){
+  const s=S.steps.find(x=>x.id===id);if(!s)return;
+  s.level=+v;
+  $('sel-'+id).style.borderLeftColor=COL[s.level-1];
+}
+function stepKey(e,id){if(e.key==='Enter'){e.preventDefault();addStep(id)}}
+function renderSteps(focusId){
+  const n=S.steps.length;
+  $('steps').innerHTML=S.steps.map((s,i)=>`<div class="stp">
+    <div class="srow2">
+      <span class="num">${i+1}</span>
+      <input type="text" id="st-${s.id}" value="${esc(s.text)}" placeholder="${i===0?'Ej.: Definir fecha y lista de invitados':'Siguiente paso…'}" aria-label="Paso ${i+1}" oninput="setStepText(${s.id},this.value)" onkeydown="stepKey(event,${s.id})">
+      <div class="acts">
+        <button class="mv-btn" onclick="moveStep(${s.id},-1)" aria-label="Subir paso" ${i===0?'disabled':''}>▲</button>
+        <button class="mv-btn" onclick="moveStep(${s.id},1)" aria-label="Bajar paso" ${i===n-1?'disabled':''}>▼</button>
+        <button class="del-btn" onclick="removeStep(${s.id})" aria-label="Quitar paso">✕</button>
+      </div>
+      <label class="qd"><span>Nivel de autonomía</span>
+        <select id="sel-${s.id}" style="border-left-color:${COL[s.level-1]}" onchange="setLevel(${s.id},this.value)">
+          ${LV.map((l,k)=>`<option value="${k+1}"${s.level===k+1?' selected':''}>${k+1} — ${l[0]}: ${l[1]}</option>`).join('')}
+        </select>
+      </label>
+    </div>
+  </div>`).join('');
+  if(focusId){const el=$('st-'+focusId);if(el)el.focus()}
+}
+function goStep3(){
+  if(!cleanSteps().length)return setErr('e2','Escribe al menos un paso.');
+  setErr('e2','');
+  show(3);
 }
 
-function autoGrow(el){el.style.height='auto';el.style.height=el.scrollHeight+'px'}
+/* ===== STEP 3: CONVERSACIÓN ===== */
+function buildStep3(){
+  const n=personName(),steps=cleanSteps();
+  $('ctx3').innerHTML=
+    '<div><strong>Qué se delega:</strong> '+esc(S.task.trim())+'</div>'+
+    '<div><strong>Persona:</strong> '+esc(n)+'</div>'+
+    '<div style="margin-top:6px"><strong>Pasos y nivel de autonomía:</strong></div>'+
+    '<ol>'+steps.map(s=>'<li><b>'+esc(s.text.trim())+'</b> — '+LV[s.level-1][0]+'</li>').join('')+'</ol>';
+  $('guide').innerHTML=GUIDE.map((g,i)=>{
+    const [t,q]=g(n);
+    return `<label class="gitem${S.cover[i]?' cov':''}"><input type="checkbox" ${S.cover[i]?'checked':''} onchange="S.cover[${i}]=this.checked;this.parentNode.classList.toggle('cov',this.checked)"><span><b>${i+1}. ${esc(t)}</b><span>${esc(q)}</span></span></label>`;
+  }).join('');
+}
+async function copyScript(){
+  if(!S.script.trim())return setErr('e3','Escribe tu texto antes de copiarlo.');
+  setErr('e3','');
+  const ta=$('script');
+  try{await navigator.clipboard.writeText(S.script)}
+  catch(e){ta.select();document.execCommand('copy');ta.setSelectionRange(0,0)}
+  const b=$('copy-btn');b.textContent='✓ Copiado';
+  setTimeout(()=>{b.textContent='📋 Copiar texto'},1800);
+}
+function buildPrint(){
+  const steps=cleanSteps();
+  $('print-sheet').innerHTML=
+    '<h1>Mi conversación de delegación</h1>'+
+    '<p><strong>Qué se delega:</strong> '+esc(S.task.trim())+'</p>'+
+    '<p><strong>Persona:</strong> '+esc(personName())+'</p>'+
+    '<h2>Pasos y nivel de autonomía</h2><ol>'+steps.map(s=>'<li>'+esc(s.text.trim())+' — <strong>'+LV[s.level-1][0]+'</strong></li>').join('')+'</ol>'+
+    '<h2>Mi texto</h2><div class="ps">'+esc(S.script)+'</div>'+
+    '<h2>Notas</h2><div class="notes"></div>';
+}
+function printSheet(){
+  if(!S.script.trim())return setErr('e3','Escribe tu texto antes de imprimir.');
+  setErr('e3','');
+  buildPrint();window.print();
+}
+window.addEventListener('beforeprint',buildPrint);
 
-/* ===== EXIT ===== */
-function openExitModal(){
-  const m=document.getElementById('exit-modal');
-  m.style.display='flex';
+/* ===== RESET / INIT ===== */
+function initUI(){
+  $('task').value='';$('script').value='';
+  renderCriteria();renderCtx1();renderCheck();
+  addPerson(true);
+  for(let i=0;i<3;i++)S.steps.push({id:++uid,text:'',level:3});
+  renderSteps();
+  setErr('e1','');setErr('e2','');setErr('e3','');
+  show(1);
 }
-function closeExitModal(){
-  document.getElementById('exit-modal').style.display='none';
+function newTask(){
+  if(S.script.trim()&&!confirm('Se borrará todo lo que escribiste, incluido tu texto. ¿Ya lo copiaste o lo imprimiste?'))return;
+  S=fresh();
+  initUI();
 }
-function doExit(){
-  document.getElementById('exit-modal').style.display='none';
-  // Show a thank-you screen
-  document.querySelector('.layout').innerHTML=`
-    <div style="text-align:center;padding:80px 20px">
-      <div style="font-size:48px;margin-bottom:16px">👏</div>
-      <h2 style="font-size:22px;font-weight:600;margin-bottom:10px">¡Bien hecho!</h2>
-      <p style="font-size:14px;color:var(--text-sec);line-height:1.7;max-width:420px;margin:0 auto 28px">Trabajaste en tu proceso de delegación. Cada paso que das en esta dirección fortalece a tu equipo y libera tu tiempo para lo que más importa.</p>
-      <button class="btn btn-primary" style="font-size:14px;padding:11px 24px" onclick="location.reload()">🔄 Volver a empezar</button>
-    </div>`;
-}
-
-/* ===== INIT ===== */
-addTask();
+window.addEventListener('beforeunload',e=>{if(S.script.trim()){e.preventDefault();e.returnValue=''}});
+initUI();
 </script>
 </body>
 </html>
